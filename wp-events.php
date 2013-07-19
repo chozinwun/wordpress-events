@@ -54,8 +54,39 @@
 	function save_event_details($post_id) {
 		print_r($post_id);
 		
-		if (isset($_REQUEST['event_zip'])) {
+		if (isset($_REQUEST['event_venue'])) {
+			update_post_meta($post_id, 'event_venue', $_REQUEST['event_venue']);
+    }
+    
+    if (isset($_REQUEST['event_zip'])) {
 			update_post_meta($post_id, 'event_zip', $_REQUEST['event_zip']);
+    }
+	}
+	
+	function add_event_columns($columns) {
+		unset($columns['title']);
+		unset($columns['date']);
+		
+		return array_merge($columns, 
+			array(
+				'title' => __('Event Name'),
+				'event_venue' => __('Venue'),
+				'event_city' => __('City'),
+				'event_state' => __('State'),
+      	'event_zip' =>__( 'Zip')
+      )
+    );
+	}
+	
+	function custom_event_column($column,$post) {
+		print_r($post);
+		switch ( $column ) {
+      case 'event_venue':
+        echo get_post_meta( $post_id , 'event_venue' , true );
+        break;
+      case 'event_zip':
+        echo get_post_meta( $post_id , 'event_zip' , true );
+        break;
     }
 	}
 	
@@ -63,4 +94,6 @@
 	
 	add_action('add_meta_boxes','event_details_box');
 	add_action('save_post','save_event_details' );
+	add_filter('manage_event_posts_columns','add_event_columns');
+	add_action('manage_event_posts_custom_column','custom_event_column');
 ?>
