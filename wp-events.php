@@ -123,9 +123,9 @@
     }
 	}
 	
-	function display_event_title($title, $id) {
+	function display_event_title($title) {
 		global $post;
-		
+
 		if (($post->post_type == 'event') && in_the_loop()){
 			$meta = get_post_meta(get_the_ID());
 			$date = "";
