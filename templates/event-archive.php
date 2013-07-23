@@ -1,0 +1,1 @@
+<style>.archive .event .wp-post-image { display: none; }</style>
