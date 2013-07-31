@@ -141,13 +141,16 @@
 			return $title;
 	}
 
-	function display_event_content() {
+	function display_event_content($content) {
 		global $post;
 		
 		if (($post->post_type == 'event') && is_single()){
 			include plugin_dir_path(__FILE__) . 'templates/event-content.php';	
 		} elseif (is_archive()) {
 			include plugin_dir_path(__FILE__) . 'templates/event-archive.php';
+			return $post->post_excerpt;
+		} else {
+			return $content;
 		}
 	}
 
