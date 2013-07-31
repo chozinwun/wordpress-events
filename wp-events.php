@@ -9,7 +9,7 @@
 	*/
 	
 	function events_post_type() {
-	
+
 		$labels = array(
 			'name'               => _x( 'Events', 'post type general name' ),
 			'singular_name'      => _x( 'Event', 'post type singular name' ),
@@ -65,6 +65,7 @@
 		
 		if (isset($_REQUEST['_event_start_date'])) {
 			update_post_meta($post_id, '_event_start_date', $_REQUEST['_event_start_date']);
+			update_post_meta($post_id, '_event_start_date_actual', strtotime($_REQUEST['_event_start_date']));
 	    }
 	    
 	    if (isset($_REQUEST['_event_start_time'])) {
@@ -169,7 +170,7 @@
 				query_posts(array(
 					'post_type' => 'event',
 					'orderby' => 'meta_value',
-					'meta_key' => '_event_start_date',
+					'meta_key' => '_event_start_date_actual',
 					'order' => 'ASC',
 					'paged' => ( get_query_var('paged') ? get_query_var('paged') : 1 )
 				));
