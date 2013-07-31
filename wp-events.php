@@ -165,7 +165,7 @@
 	function filter_events($query){
 		
 		if (is_home()) {
-			$query->set('post_type',array('post','event'));
+			//$query->set('post_type',array('post','event'));
 		}
 
 		if(is_post_type_archive('event')){
