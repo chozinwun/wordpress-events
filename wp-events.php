@@ -164,6 +164,10 @@
 	
 	function filter_events($query){
 		
+		if (is_home()) {
+			$query->set('post_type',array('post','event'));
+		}
+
 		if(is_post_type_archive('event')){
 			if(!is_admin() && $query->is_main_query()) {
 
