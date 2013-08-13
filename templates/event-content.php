@@ -1,10 +1,10 @@
-<?php $meta = get_post_meta(get_the_ID()); ?>
+<?php $post_meta = get_post_meta(get_the_ID()); ?>
 
 <style>.event .wp-post-image { display: none; }</style>
 
 <h2 style="font-weight: 200; font-size: 16px; display: none;">
-	<?php echo isset($meta['_event_date'][0]) ? $meta['_event_date'][0] : ''; ?>
-	<?php echo isset($meta['_event_start_time'][0]) ? $meta['_event_start_time'][0] : ''; ?>
+	<?php echo isset($post_meta['_event_date'][0]) ? $post_meta['_event_date'][0] : ''; ?>
+	<?php echo isset($post_meta['_event_start_time'][0]) ? $post_meta['_event_start_time'][0] : ''; ?>
 </h2>
 
 <div id="event-description" style="width: 100%; display; block; margin-bottom: 20px;">
@@ -17,20 +17,20 @@
 		<table>
 			<tr>
 				<td>Location</td>
-				<td><?php echo isset($meta['_event_venue'][0]) ? $meta['_event_venue'][0] : "--" ?></td>
+				<td><?php echo isset($post_meta['_event_venue'][0]) ? $post_meta['_event_venue'][0] : "--" ?></td>
 			</tr>
 			<tr>
 				<td>Address</td>
 				<td>
-					<?php echo isset($meta['_event_address'][0]) ? $meta['_event_address'][0] : "--" ?><br />
-					<?php echo isset($meta['_event_city'][0]) ? $meta['_event_city'][0] : "--" ?>, 
-					<?php echo isset($meta['_event_state'][0]) ? $meta['_event_state'][0] : "--" ?> 
-					<?php echo isset($meta['_event_zip'][0]) ? $meta['_event_zip'][0] : "--" ?>
+					<?php echo isset($post_meta['_event_address'][0]) ? $post_meta['_event_address'][0] : "--" ?><br />
+					<?php echo isset($post_meta['_event_city'][0]) ? $post_meta['_event_city'][0] : "--" ?>, 
+					<?php echo isset($post_meta['_event_state'][0]) ? $post_meta['_event_state'][0] : "--" ?> 
+					<?php echo isset($post_meta['_event_zip'][0]) ? $post_meta['_event_zip'][0] : "--" ?>
 				</td>
 			</tr>
 			<tr>
 				<td>Phone</td>
-				<td><?php echo isset($meta['_event_phone'][0]) ? $meta['_event_phone'][0] : "--" ?></td>
+				<td><?php echo isset($post_meta['_event_phone'][0]) ? $post_meta['_event_phone'][0] : "--" ?></td>
 			</tr>
 		</table>
 	</div>
@@ -40,3 +40,11 @@
 		<button>RSVP</button>
 	</div>
 </div>
+
+<?php if ( isset($post_meta['_event_allow_volunteers']) && ( $post_meta['_event_allow_volunteers'][0] ) ): ?>
+	<?php if ( is_user_logged_in() ): ?>
+	<button class="volunteer-button" data-event-id="<?php the_ID(); ?>">Volunteer</button>
+	<?php else: ?>
+	To volunteer, <a href="#">Signup</a> or <a href="#">login</a>
+	<?php endif; ?>
+<?php endif; ?>

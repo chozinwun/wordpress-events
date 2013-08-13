@@ -38,7 +38,15 @@
 			'rewrite' 			=> array( 'slug' => 'events' ),
 			'capability_type' => 'page'
 		);
+
 		register_post_type('event',$args);
+	}
+
+	function event_load_scripts() {
+		wp_register_script('wp-events-js',plugins_url('/assets/js/wp-events.js',__FILE__),array('jquery'),false);
+		wp_enqueue_script('wp-events-js');
+
+		wp_localize_script('wp-events-js','wpevent', array( 'ajaxurl' => admin_url('admin-ajax.php')));
 	}
 
 	function event_details_box() {
@@ -58,7 +66,13 @@
 		echo '<label>City</label><br /> <input name="_event_city" value="' . $meta['_event_city'][0] . '" /><br />';
 		echo '<label>State</label><br /> <input name="_event_state" value="' . $meta['_event_state'][0] . '" /><br />';
 		echo '<label>Zip Code</label><br /> <input name="_event_zip" value="' . $meta['_event_zip'][0] . '" /><br />';
-		echo '<label>Phone</label><br /> <input name="_event_phone" value="' . $meta['_event_phone'][0] . '" />';
+		echo '<label>Phone</label><br /> <input name="_event_phone" value="' . $meta['_event_phone'][0] . '" /><br />';
+
+		if ( $meta['_event_allow_volunteers'][0] ) {
+			echo '<label>Allow Volunteers?</label> <input name="_event_allow_volunteers" value="1" type="checkbox" checked="true" />';
+		} else {
+			echo '<label>Allow Volunteers?</label> <input name="_event_allow_volunteers" value="1" type="checkbox" />';
+		}
 	}
 	
 	function save_event_details($post_id) {
@@ -95,6 +109,12 @@
 	    if (isset($_REQUEST['_event_phone'])) {
 			update_post_meta($post_id, '_event_phone', $_REQUEST['_event_phone']);
 	    }
+
+	    if (isset($_REQUEST['_event_allow_volunteers'])) {
+			update_post_meta( $post_id, '_event_allow_volunteers', 1 );
+	    } else {
+	    	update_post_meta( $post_id, '_event_allow_volunteers', 0 );
+	    }
 	}
 	
 	function add_event_columns($columns) {
@@ -107,20 +127,33 @@
 				'event_venue' => __('Venue'),
 				'event_city' => __('City'),
 				'event_state' => __('State'),
-	      		'event_zip' =>__( 'Zip')
+	      		'total_volunteers' =>__( 'Volunteers'),
+	      		'total_rsvps' =>__( 'RSVPs')
 	      	)
 	    );
 	}
 	
-	function custom_event_column($column,$post) {
-		
+	function custom_event_column($column,$post_id) {
+		global $wpdb;
+		$table_name = $wpdb->prefix . "events_volunteers";
+
 		switch ( $column ) {
-	      case '_event_venue':
-	        echo get_post_meta( $post_id , '_event_venue' , true );
-	        break;
-	      case '_event_zip':
-	        echo get_post_meta( $post_id , '_event_zip' , true );
-	        break;
+	      	case 'event_venue':
+	        	echo get_post_meta( $post_id , '_event_venue' , true );
+	        	break;
+	      	case 'event_city':
+	        	echo get_post_meta( $post_id , '_event_city' , true );
+	        	break;
+	        case 'event_state':
+	        	echo get_post_meta( $post_id , '_event_state' , true );
+	        	break;
+	      	case 'total_volunteers':
+	      		$user_count = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE event_id = $post_id" );
+	      		echo "<strong>$user_count</strong>";
+	      		break;
+	      	case 'total_rsvps':
+	      		echo "<strong>0</strong>";
+	      		break;
 	    }
 	}
 	
@@ -185,12 +218,64 @@
 		}
 	}
 
+	function events_install() {
+		global $wpdb;
+
+   		$table_name = $wpdb->prefix . "events_volunteers";
+
+   		$sql = "CREATE TABLE $table_name (
+			id mediumint(11) NOT NULL AUTO_INCREMENT,
+			event_id mediumint(11) NOT NULL,
+			user_id mediumint(11) NOT NULL,
+			created_at datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			UNIQUE KEY id (id)
+		);";
+		
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		dbDelta($sql);
+	}
+
+	function add_event_volunteer() {
+		global $wpdb, $current_user;
+		
+		$table_name = $wpdb->prefix . "events_volunteers";
+		$event_id = $_REQUEST['event_id'];
+		$user_id = $current_user->ID;
+
+		if ( is_user_logged_in() ) {
+
+			$volunteer = $wpdb->get_row("SELECT * FROM $table_name WHERE user_id = $user_id AND event_id = $event_id");
+
+			if (!$volunteer) {
+				$entry = array(
+					'event_id' => $event_id,
+					'user_id' => $current_user->ID,
+					'created_at' => current_time('mysql')
+				);
+
+				$response = $wpdb->insert( $table_name, $entry );
+				echo json_encode( array( 'success' => true, 'msg' => 'Thank You for volunteering. Be on the lookout for volunteer opportunities') );
+			
+			} else {
+				echo json_encode( array( 'success' => false, 'msg' => 'Thank You for your interest, but you\'re already registered as a volunteer') );	
+			}
+			
+		} else {
+
+		}
+
+		exit;
+	}
+
 	add_action('init','events_post_type');
-	
+	add_action('init','events_install');
+
+	add_action('wp_enqueue_scripts', 'event_load_scripts');
+
 	add_action('add_meta_boxes','event_details_box');
 	add_action('save_post','save_event_details' );
 	add_filter('manage_event_posts_columns','add_event_columns');
-	add_action('manage_event_posts_custom_column','custom_event_column');
+	add_action( 'manage_event_posts_custom_column', 'custom_event_column', 10, 2 );
 	
 	// Visual modifications
 	//add_filter('single_template','single_event_template');
@@ -198,4 +283,7 @@
 	add_filter('the_title','display_event_title');
 	add_action('pre_get_posts','filter_events');
 
+	// Ajax
+	add_action('wp_ajax_add_event_volunteer', 'add_event_volunteer');
+	add_action('wp_ajax_nopriv_add_event_volunteer', 'add_event_volunteer');
 ?>
