@@ -59,6 +59,14 @@
         wp_enqueue_style( 'wp-events-css' );
 	}
 
+	function register_event_submenu_page() {
+		add_submenu_page( null, 'Volunteers', 'Volunteers', 'manage_options', 'volunteers', 'volunteer_page');
+
+		function volunteer_page() {
+			require_once ( plugin_dir_path(__FILE__) . 'templates/volunteers.php' );
+		}
+	}
+
 	function event_details_box() {
 		add_meta_box('event_zip_box',__('Event Details'),'event_details_box_content','event','side','high');
 	}
@@ -134,11 +142,10 @@
 		return array_merge($columns, 
 			array(
 				'title' => __('Event Name'),
-				'event_venue' => __('Venue'),
-				'event_city' => __('City'),
-				'event_state' => __('State'),
-	      		'total_volunteers' =>__( 'Volunteers'),
-	      		'total_rsvps' =>__( 'RSVPs')
+				'start_date' => __('Date'),
+				'location' => __('Location'),
+				'total_rsvps' =>__( 'RSVPs'),
+	      		'total_volunteers' =>__( 'Volunteers')
 	      	)
 	    );
 	}
@@ -148,18 +155,16 @@
 		$table_name = $wpdb->prefix . "events_volunteers";
 
 		switch ( $column ) {
-	      	case 'event_venue':
-	        	echo get_post_meta( $post_id , '_event_venue' , true );
-	        	break;
-	      	case 'event_city':
-	        	echo get_post_meta( $post_id , '_event_city' , true );
-	        	break;
-	        case 'event_state':
-	        	echo get_post_meta( $post_id , '_event_state' , true );
+	      	case 'start_date':
+	      		echo get_post_meta( $post_id , '_event_start_date' , true );
+	      		break;
+	      	case 'location':
+	        	echo get_post_meta( $post_id , '_event_venue' , true ) . "<br />";
+	        	echo get_post_meta( $post_id , '_event_city' , true ) . " " . get_post_meta( $post_id , '_event_state' , true );
 	        	break;
 	      	case 'total_volunteers':
 	      		$user_count = $wpdb->get_var( "SELECT COUNT(*) FROM $table_name WHERE event_id = $post_id" );
-	      		echo "<strong>$user_count</strong>";
+	      		echo "<strong><a href=\"?page=volunteers&event_id=$post_id\">$user_count</a></strong>";
 	      		break;
 	      	case 'total_rsvps':
 	      		echo "<strong>0</strong>";
@@ -348,7 +353,7 @@
 					'success' => true, 
 					'msg' => 'Thank You for volunteering. Be on the lookout for volunteer opportunities'
 				) );
-			
+				
 			} else {
 				echo json_encode( array( 'success' => false, 'msg' => 'Thank You for your interest, but you\'re already registered as a volunteer') );	
 			}
@@ -363,6 +368,7 @@
 	add_action('init','events_install');
 
 	add_action('wp_enqueue_scripts', 'event_load_scripts');
+	add_action('admin_menu', 'register_event_submenu_page');
 
 	add_action('add_meta_boxes','event_details_box');
 	add_action('save_post','save_event_details' );
