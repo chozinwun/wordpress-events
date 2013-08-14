@@ -1,4 +1,12 @@
-<?php $post_meta = get_post_meta(get_the_ID()); ?>
+<?php 
+	global $wpdb;
+
+	$post_meta = get_post_meta(get_the_ID());
+	$blog_title = get_bloginfo();
+	$table_name = $wpdb->prefix . "events_volunteers";
+
+	$volunteer = $wpdb->get_row("SELECT * FROM $table_name WHERE user_id = " . get_current_user_id() . " AND event_id = " . get_the_ID() );
+?>
 
 <style>.event .wp-post-image { display: none; }</style>
 
@@ -42,9 +50,15 @@
 </div>
 
 <?php if ( isset($post_meta['_event_allow_volunteers']) && ( $post_meta['_event_allow_volunteers'][0] ) ): ?>
-	<?php if ( is_user_logged_in() ): ?>
-	<button class="volunteer-button" data-event-id="<?php the_ID(); ?>">Volunteer</button>
+	
+	<h2>Volunteer Opportunities</h2>
+
+	<?php if ( $volunteer ): ?>
+		<p>You've already signed up to volunteer at this event. If you haven't heard from a representative, please email <a href="mailto:thesummit@newjc.org">thesummit@newjc.org</a>.</p>
+	<?php elseif ( is_user_logged_in() ): ?>
+		<p><button class="volunteer-button" data-event-id="<?php the_ID(); ?>">Volunteer</button></p>
 	<?php else: ?>
-	To volunteer, <a href="#">Signup</a> or <a href="#">login</a>
+		<p>To volunteer, <a href="?show=signup">signup</a> or <a href="?show=login">login</a>.</p>
 	<?php endif; ?>
+
 <?php endif; ?>

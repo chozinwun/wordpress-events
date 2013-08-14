@@ -1,0 +1,25 @@
+	.volunteer-button {
+	width: 140px;
+	background: #CCC;
+	font: inherit; }
+
+	form.volunteer-form ul {
+	list-style: none;
+	padding: 15px 0;
+	border-top: 1px solid #eee;
+	border-bottom: 1px solid #eee;
+	margin-bottom: 25px; }
+
+		form.volunteer-form > ul > li {
+		padding: 4px 0; }
+
+		form.volunteer-form input {
+		width: 170px; }
+
+		form.volunteer-form label {
+		min-width: 120px;
+		display: inline-block;
+		text-align: right; }
+
+		form.volunteer-form input[type="submit"] {
+		margin-left: 126px; }

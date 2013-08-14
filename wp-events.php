@@ -32,7 +32,7 @@
 			'description'   => 'Holds our events and event specific data',
 			'public'        => true,
 			'menu_position' => 5,
-			'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt'),
+			'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes'),
 			'has_archive'   => true,
 			'show_in_nav_menus' => true,
 			'rewrite' 			=> array( 'slug' => 'events' ),
@@ -46,7 +46,17 @@
 		wp_register_script('wp-events-js',plugins_url('/assets/js/wp-events.js',__FILE__),array('jquery'),false);
 		wp_enqueue_script('wp-events-js');
 
-		wp_localize_script('wp-events-js','wpevent', array( 'ajaxurl' => admin_url('admin-ajax.php')));
+		wp_localize_script(
+			'wp-events-js',
+			'wpevent', 
+			array( 
+		 		'ajaxurl' => admin_url('admin-ajax.php'),
+		 		'user_logged_in' => is_user_logged_in()
+		 	)
+		);
+
+		wp_register_style( 'wp-events-css', plugins_url('/assets/css/wp-events.css', __FILE__) );
+        wp_enqueue_style( 'wp-events-css' );
 	}
 
 	function event_details_box() {
@@ -170,21 +180,35 @@
 			
 			$event_title = $title . "<br /><small style=\"font-weight: 200;\">$date $time</small>";
 			return $event_title;	
-		} else 
+		} else {
 			return $title;
+		}
+
 	}
 
 	function display_event_content($content) {
 		global $post;
 		
 		if (($post->post_type == 'event') && is_single()){
-			include plugin_dir_path(__FILE__) . 'templates/event-content.php';	
+			
+			if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'signup') ) {
+				require_once ( plugin_dir_path(__FILE__) . 'templates/event-signup.php' );	
+
+			} else if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'login') ) {
+				require_once ( plugin_dir_path(__FILE__) . 'templates/event-login.php' );
+
+			} else {
+				require_once ( plugin_dir_path(__FILE__) . 'templates/event-content.php' );	
+			}
+
 		} elseif (is_archive()) {
 			include plugin_dir_path(__FILE__) . 'templates/event-archive.php';
 			return $post->post_excerpt;
+
 		} else {
 			return $content;
 		}
+
 	}
 
 	function single_event_template($single_template) {
@@ -235,6 +259,61 @@
 		dbDelta($sql);
 	}
 
+	function signup_volunteer() {
+		global $wpdb;
+
+		$user_id = username_exists( $user_name );
+		$user_email = $_REQUEST['user_email'];
+
+		if ( empty($_REQUEST['user_pass']) ) {
+			echo json_encode( array( 'success' => false, 'msg' => 'Your password cannot be blank') );
+			exit;
+		} else if ($_REQUEST['user_pass'] != $_REQUEST['user_pass_retype']) {
+			echo json_encode( array( 'success' => false, 'msg' => 'Your passwords don\'t match') );
+			exit;
+		}
+
+		if ( !$user_id && email_exists($user_email) == false ) {
+			$user_params = array(
+				'user_pass' => $_REQUEST['user_pass'],
+				'user_email' => $_REQUEST['user_email'],
+				'user_login' => $_REQUEST['user_email'],
+				'first_name' => $_REQUEST['first_name'],
+				'last_name' => $_REQUEST['last_name'],
+				'display_name' => $_REQUEST['first_name'] . ' ' . $_REQUEST['last_name'],
+				'nickname' => $_REQUEST['first_name'] . $_REQUEST['last_name'],
+				'user_nicename' => $_REQUEST['first_name'] . $_REQUEST['last_name']
+			);
+
+			$user_id = wp_insert_user( $user_params );
+
+			update_user_meta( $user_id, 'user_mobile', $_REQUEST['user_mobile'] );
+
+			return login_volunteer();
+		} else {
+			echo json_encode( array( 'success' => false, 'msg' => 'This email has already been used') );
+			exit;
+		}
+
+	}
+
+	function login_volunteer() {
+
+		$creds = array();
+		$creds['user_login'] = $_REQUEST['user_email'];
+		$creds['user_password'] = $_REQUEST['user_pass'];
+		$creds['remember'] = true;
+
+		$user = wp_signon( $creds, false );
+
+		if ( is_wp_error($user) ) {
+			echo json_encode( array( 'success' => false, 'msg' => $user->get_error_message() ) );
+			exit;
+		} 
+
+		return $user;
+	}
+
 	function add_event_volunteer() {
 		global $wpdb, $current_user;
 		
@@ -242,26 +321,39 @@
 		$event_id = $_REQUEST['event_id'];
 		$user_id = $current_user->ID;
 
-		if ( is_user_logged_in() ) {
+		// Login or Signup user
+		if ( isset($_REQUEST['func']) && ($_REQUEST['func'] == 'login_user') ) {	
+			$user = login_volunteer();
+			$user_id = $user->ID;	
+
+		} else if ( isset($_REQUEST['func']) && ($_REQUEST['func'] == 'register_user') ) {	
+			$user = signup_volunteer();
+			$user_id = $user->ID;
+		}
+
+		// if user logged in then add to volunteer database
+		if ( is_user_logged_in() || isset($user) ) {
 
 			$volunteer = $wpdb->get_row("SELECT * FROM $table_name WHERE user_id = $user_id AND event_id = $event_id");
 
 			if (!$volunteer) {
 				$entry = array(
 					'event_id' => $event_id,
-					'user_id' => $current_user->ID,
+					'user_id' => $user_id,
 					'created_at' => current_time('mysql')
 				);
 
 				$response = $wpdb->insert( $table_name, $entry );
-				echo json_encode( array( 'success' => true, 'msg' => 'Thank You for volunteering. Be on the lookout for volunteer opportunities') );
+				echo json_encode( array( 
+					'success' => true, 
+					'msg' => 'Thank You for volunteering. Be on the lookout for volunteer opportunities'
+				) );
 			
 			} else {
 				echo json_encode( array( 'success' => false, 'msg' => 'Thank You for your interest, but you\'re already registered as a volunteer') );	
 			}
-			
 		} else {
-
+			echo json_encode( array( 'success' => false, 'msg' => 'You must be registered to volunteer') );	 
 		}
 
 		exit;
