@@ -23,3 +23,8 @@
 
 		form.volunteer-form input[type="submit"] {
 		margin-left: 126px; }
+
+	#volunteer-box {
+	display: block;
+	width: 100%;
+	clear: both; }

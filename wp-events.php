@@ -36,7 +36,8 @@
 			'has_archive'   => true,
 			'show_in_nav_menus' => true,
 			'rewrite' 			=> array( 'slug' => 'events' ),
-			'capability_type' => 'page'
+			'capability_type' => 'page',
+			'hierarchical'	=> true
 		);
 
 		register_post_type('event',$args);
