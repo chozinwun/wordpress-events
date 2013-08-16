@@ -57,10 +57,10 @@
 		<?php if ( $volunteer ): ?>
 			<p>You've already signed up to volunteer at this event. If you haven't heard from a representative, please email <a href="mailto:thesummit@newjc.org">thesummit@newjc.org</a>.</p>
 		<?php elseif ( is_user_logged_in() ): ?>
-			<p><button class="volunteer-button" data-event-id="<?php the_ID(); ?>">Volunteer</button></p>
+			<p><a class="volunteer-button" data-event-id="<?php the_ID(); ?>">Volunteer</a></p>
 		<?php else: ?>
 			<p>To volunteer, <a href="?show=signup">signup</a> or <a href="?show=login">login</a>.</p>
 		<?php endif; ?>
 	</div>
-	
+
 <?php endif; ?>
