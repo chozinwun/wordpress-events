@@ -16,7 +16,7 @@
 </h2>
 
 <div id="event-description" style="width: 100%; display; block; margin-bottom: 20px;">
-<?php echo get_the_content(); ?>
+	<?php echo $content; ?>
 </div>
 
 <div id="event-details">

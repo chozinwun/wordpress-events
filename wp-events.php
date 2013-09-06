@@ -211,12 +211,7 @@
 	function display_event_content($content) {
 		global $post;
 		
-		if ( isset($_REQUEST['trip']) && is_single() ) {
-			$content = "<h2>Plan Your Trip To " . $_REQUEST['trip'] . "</h2>" ;
-			return $content;
-		}
-		
-		if (($post->post_type == 'event') && is_single()){
+		if ( ($post->post_type == 'event') && is_single() && is_main_query() ){
 			
 			if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'signup') ) {
 				require_once ( plugin_dir_path(__FILE__) . 'templates/event-signup.php' );	
@@ -225,7 +220,7 @@
 				require_once ( plugin_dir_path(__FILE__) . 'templates/event-login.php' );
 
 			} else {
-				require_once ( plugin_dir_path(__FILE__) . 'templates/event-content.php' );	
+				require_once( plugin_dir_path(__FILE__) . 'templates/event-content.php' );	
 			}
 
 		} elseif (is_archive()) {
