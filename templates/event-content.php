@@ -20,7 +20,7 @@
 </div>
 
 <div id="event-details">
-	<div style="float: left; width: 55%; margin-right: 25px; display: block;">
+	<div class="left">
 		<h3>Location</h3>
 		<table>
 			<tr>
@@ -42,10 +42,12 @@
 			</tr>
 		</table>
 	</div>
-	<div style="float: left; width: 40%; display: none;">
-		<h3>Cost</h3>
-		<p>This event is <u>free</u> and open to the public</p>
-		<button>RSVP</button>
+	<div class="right">
+		<?php if ( isset($post_meta['_event_price'][0]) && !empty($post_meta['_event_price']) ): ?>
+			<h3>Price</h3>
+			<h1 class="price"><?php echo isset($post_meta['_event_price'][0]) ? $post_meta['_event_price'][0] : "--" ?></h1>
+			<p><?php echo isset($post_meta['_event_price_notes']) ? $post_meta['_event_price_notes'][0] : '' ?></p>
+		<?php endif; ?>
 	</div>
 </div>
 

@@ -1,3 +1,20 @@
+	#event-details {
+	width: 100%;
+	display: block;
+	min-height: 240px; }
+
+		#event-details .left { 
+		float: left; width: 50%; margin-right: 50px; display: block; }
+
+		#event-details .right { 
+		float: right; width: 40%; }
+
+		.entry-content h1.price { 
+			font-weight: 200;
+			font-size: 48px;
+			margin-top: 0px;
+			line-height: 38px; }
+
 	.volunteer-button {
 	width: 150px;
 	background: #CCC;
@@ -40,4 +57,15 @@
 	#volunteer-box {
 	display: block;
 	width: 100%;
-	clear: both; }
+	clear: both;
+	margin-top: 15px; }
+
+@media (max-width: 480px) {
+
+	#event-details > div.left,
+	#event-details > div.right {
+	width: 100%;
+	float: none;
+	margin-bottom: 20px; }
+
+}

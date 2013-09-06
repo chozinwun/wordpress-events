@@ -37,7 +37,9 @@
 			'show_in_nav_menus' => true,
 			'rewrite' 			=> array( 'slug' => 'events' ),
 			'capability_type' => 'page',
-			'hierarchical'	=> true
+			'hierarchical'	=> true,
+			'publicly_queryable' => true,
+			'query_var' => true
 		);
 
 		register_post_type('event',$args);
@@ -74,10 +76,16 @@
 	
 	function event_details_box_content($post) {
 		$meta = get_post_meta($post->ID);
-		
+
+		$price = isset($meta['_event_price']) ? $meta['_event_price'][0] : '';
+		$price_notes = isset($meta['_event_price_notes']) ? $meta['_event_price_notes'][0] : '';
+
 		echo '<p><strong>Details</strong></p>';
 		echo '<label>Date</label><br /> <input name="_event_start_date" value="' . $meta['_event_start_date'][0] . '" /><br />';
 		echo '<label>Time</label><br /> <input name="_event_start_time" value="' . $meta['_event_start_time'][0] . '" /><br />';
+		echo '<p><strong>Price</strong></p>';
+		echo "<label>Price</label><br /> <input name=\"_event_price\" value=\"$price\" /><br />";
+		echo "<label>Price Notes</label><br /> <textarea name=\"_event_price_notes\">$price_notes</textarea><br />";
 		echo '<p><strong>Location</strong></p>';
 		echo '<input type="hidden" name="event_details_nonce" id="event_details_nonce" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
 		echo '<label>Venue</label><br /> <input name="_event_venue" value="' . $meta['_event_venue'][0] . '" /><br />';
@@ -127,6 +135,14 @@
 	    
 	    if (isset($_REQUEST['_event_phone'])) {
 			update_post_meta($post_id, '_event_phone', $_REQUEST['_event_phone']);
+	    }
+
+	    if (isset($_REQUEST['_event_price'])) {
+			update_post_meta($post_id, '_event_price', $_REQUEST['_event_price']);
+	    }
+
+	    if (isset($_REQUEST['_event_price_notes'])) {
+			update_post_meta($post_id, '_event_price_notes', $_REQUEST['_event_price_notes']);
 	    }
 
 	    if (isset($_REQUEST['_event_allow_volunteers'])) {
@@ -194,6 +210,11 @@
 
 	function display_event_content($content) {
 		global $post;
+		
+		if ( isset($_REQUEST['trip']) && is_single() ) {
+			$content = "<h2>Plan Your Trip To " . $_REQUEST['trip'] . "</h2>" ;
+			return $content;
+		}
 		
 		if (($post->post_type == 'event') && is_single()){
 			
