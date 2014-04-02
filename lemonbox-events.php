@@ -1,7 +1,7 @@
 <?php
 	/*
-	Plugin Name: Events Post Type
-	Description: Simple events custom post type
+	Plugin Name: Lemonbox Events
+	Description: Events Custom Post Type
 	Version: 0.1
 	License: GPL
 	Author: Marcus Battle
@@ -42,7 +42,7 @@
 			'query_var' => true
 		);
 
-		register_post_type('event',$args);
+		register_post_type('lemonbox_event',$args);
 	}
 
 	function event_load_scripts() {
@@ -381,24 +381,24 @@
 		exit;
 	}
 
-	add_action('init','events_post_type');
-	add_action('init','events_install');
+	add_action( 'init','events_post_type' );
+	add_action( 'init','events_install' );
 
-	add_action('wp_enqueue_scripts', 'event_load_scripts');
-	add_action('admin_menu', 'register_event_submenu_page');
+	add_action( 'wp_enqueue_scripts', 'event_load_scripts' );
+	add_action( 'admin_menu', 'register_event_submenu_page' );
 
-	add_action('add_meta_boxes','event_details_box');
-	add_action('save_post','save_event_details' );
-	add_filter('manage_event_posts_columns','add_event_columns');
+	add_action( 'add_meta_boxes','event_details_box' );
+	add_action( 'save_post','save_event_details' );
+	add_filter( 'manage_event_posts_columns','add_event_columns' );
 	add_action( 'manage_event_posts_custom_column', 'custom_event_column', 10, 2 );
 	
 	// Visual modifications
 	//add_filter('single_template','single_event_template');
-	add_filter('the_content','display_event_content');
-	add_filter('the_title','display_event_title');
-	add_action('pre_get_posts','filter_events');
+	add_filter( 'the_content','display_event_content' );
+	add_filter( 'the_title','display_event_title' );
+	add_action( 'pre_get_posts','filter_events' );
 
 	// Ajax
-	add_action('wp_ajax_add_event_volunteer', 'add_event_volunteer');
-	add_action('wp_ajax_nopriv_add_event_volunteer', 'add_event_volunteer');
+	add_action( 'wp_ajax_add_event_volunteer', 'add_event_volunteer' );
+	add_action( 'wp_ajax_nopriv_add_event_volunteer', 'add_event_volunteer' );
 ?>
