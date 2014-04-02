@@ -191,7 +191,8 @@
 	}
 	
 	function display_event_title($title) {
-		global $post;
+		
+		/* global $post;
 
 		if (($post->post_type == 'lemonbox_event') && in_the_loop()){
 			$meta = get_post_meta(get_the_ID());
@@ -205,8 +206,10 @@
 			return $event_title;	
 		} else {
 			return $title;
-		}
+		} */
 
+		return $title;
+		
 	}
 
 	function display_event_content($content) {
