@@ -31,15 +31,16 @@
 			'labels'        => $labels,
 			'description'   => 'Holds our events and event specific data',
 			'public'        => true,
-			'menu_position' => 5,
-			'supports'      => array( 'title', 'editor', 'thumbnail', 'excerpt', 'page-attributes'),
+			'menu_position' => 31,
+			'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes'),
 			'has_archive'   => true,
 			'show_in_nav_menus' => true,
 			'rewrite' 			=> array( 'slug' => 'events' ),
 			'capability_type' => 'page',
 			'hierarchical'	=> true,
 			'publicly_queryable' => true,
-			'query_var' => true
+			'query_var' => true,
+			'can_export' => true
 		);
 
 		register_post_type('lemonbox_event',$args);
@@ -71,7 +72,7 @@
 	}
 
 	function event_details_box() {
-		add_meta_box('event_zip_box',__('Event Details'),'event_details_box_content','event','side','high');
+		add_meta_box( 'event_zip_box', __('Event Details'), 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
 	}
 	
 	function event_details_box_content($post) {
@@ -192,7 +193,7 @@
 	function display_event_title($title) {
 		global $post;
 
-		if (($post->post_type == 'event') && in_the_loop()){
+		if (($post->post_type == 'lemonbox_event') && in_the_loop()){
 			$meta = get_post_meta(get_the_ID());
 			$date = "";
 			$time = "";
@@ -211,7 +212,7 @@
 	function display_event_content($content) {
 		global $post;
 		
-		if ( ($post->post_type == 'event') && is_single() && is_main_query() ){
+		if ( ($post->post_type == 'lemonbox_event') && is_single() && is_main_query() ){
 			
 			if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'signup') ) {
 				require_once ( plugin_dir_path(__FILE__) . 'templates/event-signup.php' );	
@@ -236,7 +237,7 @@
 	function single_event_template($single_template) {
 		global $post;
 		
-		if ($post->post_type == 'event') {
+		if ($post->post_type == 'lemonbox_event') {
 			if (is_single()) {
 				$single_template = plugin_dir_path( __FILE__ ) . 'templates/single-event.php';
 	    		return $single_template;
@@ -246,15 +247,18 @@
 	
 	function filter_events($query){
 		
-		if (is_home()) {
-			//$query->set('post_type',array('post','event'));
+		// Show events on homepage
+		if ( is_home() && $query->is_main_query() ) {
+
+			$query->set( 'post_type', array('post','lemonbox_event') );
+
 		}
 
-		if(is_post_type_archive('event')){
+		if(is_post_type_archive('lemonbox_event')){
 			if(!is_admin() && $query->is_main_query()) {
 
 				query_posts(array(
-					'post_type' => 'event',
+					'post_type' => 'lemonbox_event',
 					'orderby' => 'meta_value',
 					'meta_key' => '_event_start_date_actual',
 					'order' => 'ASC',
@@ -379,6 +383,33 @@
 		}
 
 		exit;
+	}
+
+	function get_next_event() {
+
+		$args = array(
+			'post_type' => 'lemonbox_event',
+			'posts_per_page' => 1,
+			'orderby' => 'meta_value',
+			'meta_key' => '_event_start_date_actual',
+			'order' => 'ASC'
+		);
+
+		$query = new WP_Query( $args );
+
+		if ( isset($query->posts) ) {
+			
+			$event = $query->posts[0];
+			$event->date = date( 'F d, Y', strtotime(get_post_meta( $event->ID, '_event_start_date', true )) );
+			$event->time = get_post_meta( $event->ID, '_event_start_time', true );
+			$event->permalink = get_permalink( $event->ID );
+
+		} else {
+			$event = null;
+		}
+
+		return $event;
+
 	}
 
 	add_action( 'init','events_post_type' );
