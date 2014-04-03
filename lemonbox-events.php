@@ -47,7 +47,7 @@
 	}
 
 	function event_load_scripts() {
-		wp_register_script('wp-events-js',plugins_url('/assets/js/wp-events.js',__FILE__),array('jquery'),false);
+		wp_register_script('wp-events-js',plugins_url('/assets/js/lemonbox-events.js',__FILE__),array('jquery'),false,true);
 		wp_enqueue_script('wp-events-js');
 
 		wp_localize_script(
@@ -59,7 +59,7 @@
 		 	)
 		);
 
-		wp_register_style( 'wp-events-css', plugins_url('/assets/css/wp-events.css', __FILE__) );
+		wp_register_style( 'wp-events-css', plugins_url('/assets/css/lemonbox-events.css', __FILE__) );
         wp_enqueue_style( 'wp-events-css' );
 	}
 
@@ -209,7 +209,7 @@
 		} */
 
 		return $title;
-		
+
 	}
 
 	function display_event_content($content) {

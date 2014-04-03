@@ -60,6 +60,18 @@
 	clear: both;
 	margin-top: 15px; }
 
+	.timer-col {
+	display: inline-block; }
+
+		.timer-col span {
+		height: 40px;
+		display: block;
+		text-align: center;
+		line-height: 33px;
+		font-size: 18px;
+		width: 40px;
+		font-weight: 300; }
+
 @media (max-width: 480px) {
 
 	#event-details > div.left,
