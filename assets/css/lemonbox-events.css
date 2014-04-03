@@ -60,7 +60,16 @@
 	clear: both;
 	margin-top: 15px; }
 
+	#upcoming-event { }
+
+		#upcoming-event h2,
+		#upcoming-event h3,
+		#upcoming-event h4,
+		#upcoming-event h5 { 
+		margin-top: 0; }
+
 	.timer-col {
+	margin-right: 4%;
 	display: inline-block; }
 
 		.timer-col span {
