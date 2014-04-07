@@ -1,7 +1,7 @@
 <?php
 	/*
 	Plugin Name: Lemonbox Events
-	Description: Events Custom Post Type
+	Description: Simple Events for WordPress
 	Version: 0.1
 	License: GPL
 	Author: Marcus Battle
@@ -47,7 +47,7 @@
 	}
 
 	function event_load_scripts() {
-		wp_register_script('wp-events-js',plugins_url('/assets/js/wp-events.js',__FILE__),array('jquery'),false);
+		wp_register_script('wp-events-js',plugins_url('/assets/js/lemonbox-events.js',__FILE__),array('jquery'),false,true);
 		wp_enqueue_script('wp-events-js');
 
 		wp_localize_script(
@@ -59,7 +59,7 @@
 		 	)
 		);
 
-		wp_register_style( 'wp-events-css', plugins_url('/assets/css/wp-events.css', __FILE__) );
+		wp_register_style( 'wp-events-css', plugins_url('/assets/css/lemonbox-events.css', __FILE__) );
         wp_enqueue_style( 'wp-events-css' );
 	}
 
@@ -72,9 +72,35 @@
 	}
 
 	function event_details_box() {
+		add_meta_box( 'ticket_information', 'Ticket Information', 'event_meta_box_ticket_information', 'lemonbox_event', 'normal', 'high' );
 		add_meta_box( 'event_zip_box', __('Event Details'), 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
 	}
 	
+	function event_meta_box_ticket_information( $post ) {
+
+		$args = array(
+			'post_type' => 'lemonbox_product',
+			'tax_query' => array(
+				array(
+					'taxonomy' => 'product_category',
+					'field' => 'slug',
+					'terms' => array( 'tickets' )
+				)
+			)
+		);
+		$query = new WP_Query( $args );
+		$tickets = $query->posts;
+
+		echo '<p><strong>Details</strong></p>';
+		echo '<select name="ticket_id">';
+		echo '<option value="">--</option>';
+		foreach ($tickets as $ticket) {
+			echo '<option value="' . $ticket->ID . '">' . $ticket->post_title . '</option>';
+		}
+		echo '</select>';
+
+	}
+
 	function event_details_box_content($post) {
 		$meta = get_post_meta($post->ID);
 
@@ -209,7 +235,7 @@
 		} */
 
 		return $title;
-		
+
 	}
 
 	function display_event_content($content) {
