@@ -1,7 +1,7 @@
 	#event-details {
 	width: 100%;
 	display: block;
-	min-height: 240px; }
+	min-height: 150px; }
 
 		#event-details .left { 
 		float: left; width: 50%; margin-right: 50px; display: block; }
