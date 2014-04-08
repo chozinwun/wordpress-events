@@ -44,6 +44,11 @@
 		);
 
 		register_post_type('lemonbox_event',$args);
+
+		if ( isset($_REQUEST['rsvp_status']) ) {
+			setcookie( 'event_rsvp_status', $_REQUEST['rsvp_status'], time()+3600*24*100, '/' );
+		}
+
 	}
 
 	function event_load_scripts() {
@@ -323,6 +328,8 @@
 		
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta($sql);
+
+
 	}
 
 	function signup_volunteer() {
@@ -472,4 +479,5 @@
 	// Ajax
 	add_action( 'wp_ajax_add_event_volunteer', 'add_event_volunteer' );
 	add_action( 'wp_ajax_nopriv_add_event_volunteer', 'add_event_volunteer' );
+
 ?>
