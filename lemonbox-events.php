@@ -97,14 +97,15 @@
 		$query = new WP_Query( $args );
 		$tickets = $query->posts;
 
-		echo '<p><strong>Select </strong></p>';
-		echo '<select name="ticket_id">';
+		echo '<p><strong>Ticket</strong></p>';
+		echo '<select name="ticket_id" data-value="' . get_post_meta( $post->ID, 'ticket_id', true ) . '">';
 		echo '<option value="">--</option>';
 		foreach ($tickets as $ticket) {
 			echo '<option value="' . $ticket->ID . '">' . $ticket->post_title . '</option>';
 		}
 		echo '</select>';
 
+		echo "<script>jQuery('select[name=\"ticket_id\"]').val( jQuery('select[name=\"ticket_id\"]').data('value') );</script>";
 	}
 
 	function event_details_box_content($post) {
@@ -137,6 +138,10 @@
 	
 	function save_event_details($post_id) {
 		
+		if (isset($_REQUEST['ticket_id'])) {
+			update_post_meta($post_id, 'ticket_id', $_REQUEST['ticket_id']);
+	    }
+
 		if (isset($_REQUEST['_event_start_date'])) {
 			update_post_meta($post_id, '_event_start_date', $_REQUEST['_event_start_date']);
 			update_post_meta($post_id, '_event_start_date_actual', strtotime($_REQUEST['_event_start_date']));
