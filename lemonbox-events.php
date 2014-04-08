@@ -73,9 +73,14 @@
 
 	function event_details_box() {
 		add_meta_box( 'ticket_information', 'Ticket Information', 'event_meta_box_ticket_information', 'lemonbox_event', 'normal', 'high' );
+		add_meta_box( 'rsvp_information', 'RSVP', 'event_meta_box_rsvp', 'lemonbox_event', 'normal', 'high' );
 		add_meta_box( 'event_zip_box', __('Event Details'), 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
 	}
 	
+	function event_meta_box_rsvp( $post ) {
+		echo "RSVP";
+	}
+
 	function event_meta_box_ticket_information( $post ) {
 
 		$args = array(
@@ -88,10 +93,11 @@
 				)
 			)
 		);
+
 		$query = new WP_Query( $args );
 		$tickets = $query->posts;
 
-		echo '<p><strong>Details</strong></p>';
+		echo '<p><strong>Select </strong></p>';
 		echo '<select name="ticket_id">';
 		echo '<option value="">--</option>';
 		foreach ($tickets as $ticket) {
@@ -429,7 +435,7 @@
 		if ( isset($query->posts) ) {
 			
 			$event = $query->posts[0];
-			$event->date = date( 'F d, Y', strtotime(get_post_meta( $event->ID, '_event_start_date', true )) );
+			$event->date = date( 'l F d, Y', strtotime(get_post_meta( $event->ID, '_event_start_date', true )) );
 			$event->time = get_post_meta( $event->ID, '_event_start_time', true );
 			$event->permalink = get_permalink( $event->ID );
 
