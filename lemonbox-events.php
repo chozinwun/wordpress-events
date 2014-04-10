@@ -445,11 +445,16 @@
 		$query = new WP_Query( $args );
 
 		if ( isset($query->posts) ) {
-			
+
 			$event = $query->posts[0];
-			$event->date = date( 'l F d, Y', strtotime(get_post_meta( $event->ID, '_event_start_date', true )) );
+			
+			$date = get_post_meta( $event->ID, '_event_start_date', true );
+			$time = get_post_meta( $event->ID, '_event_start_time', true );
+
+			$event->date = date( 'l F d, Y g:i A', strtotime( $date . ' ' . $time ) );
 			$event->time = get_post_meta( $event->ID, '_event_start_time', true );
 			$event->permalink = get_permalink( $event->ID );
+			$event->ticket_id = get_post_meta( $event->ID, 'ticket_id', true );
 
 		} else {
 			$event = null;
