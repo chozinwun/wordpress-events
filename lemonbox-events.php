@@ -455,6 +455,11 @@
 			$event->time = get_post_meta( $event->ID, '_event_start_time', true );
 			$event->permalink = get_permalink( $event->ID );
 			$event->ticket_id = get_post_meta( $event->ID, 'ticket_id', true );
+			
+			if ( $event->ticket_id ) {
+				$event->ticket = get_post( $event->ticket_id );
+				$event->ticket->meta = get_post_meta( $event->ticket_id );
+			}
 
 		} else {
 			$event = null;
