@@ -60,7 +60,10 @@
 	clear: both;
 	margin-top: 15px; }
 
-	#upcoming-event { }
+	#upcoming-event { 
+		background-color: #f1f1f1;
+		padding-top: 35px;
+		padding-bottom: 20px; }
 
 		#upcoming-event h2,
 		#upcoming-event h3,
