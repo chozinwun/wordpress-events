@@ -10,6 +10,8 @@
 	
 	function events_post_type() {
 
+		date_default_timezone_set('America/New_York');
+
 		$labels = array(
 			'name'               => _x( 'Events', 'post type general name' ),
 			'singular_name'      => _x( 'Event', 'post type singular name' ),
@@ -77,9 +79,10 @@
 	}
 
 	function event_details_box() {
+		add_meta_box( 'event_information', 'Event Details', 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
 		add_meta_box( 'ticket_information', 'Ticket Information', 'event_meta_box_ticket_information', 'lemonbox_event', 'normal', 'high' );
 		add_meta_box( 'rsvp_information', 'RSVP', 'event_meta_box_rsvp', 'lemonbox_event', 'normal', 'high' );
-		add_meta_box( 'event_zip_box', __('Event Details'), 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
+		
 	}
 	
 	function event_meta_box_rsvp( $post ) {
@@ -114,14 +117,23 @@
 	}
 
 	function event_details_box_content($post) {
+
 		$meta = get_post_meta($post->ID);
 
 		$price = isset($meta['_event_price']) ? $meta['_event_price'][0] : '';
 		$price_notes = isset($meta['_event_price_notes']) ? $meta['_event_price_notes'][0] : '';
 
-		echo '<p><strong>Details</strong></p>';
-		echo '<label>Date</label><br /> <input name="_event_start_date" value="' . $meta['_event_start_date'][0] . '" /><br />';
-		echo '<label>Time</label><br /> <input name="_event_start_time" value="' . $meta['_event_start_time'][0] . '" /><br />';
+		$start_date = get_post_meta( $post->ID, 'event_start_date', true );
+		$start_time = get_post_meta( $post->ID, 'event_start_time', true );
+		$end_date = get_post_meta( $post->ID, 'event_end_date', true );
+		$end_time = get_post_meta( $post->ID, 'event_end_time', true );
+
+		echo '<label>Start Date</label><br /> <input name="event_start_date" value="' . $start_date . '" /><br />';
+		echo '<label>Start Time</label><br /> <input name="event_start_time" value="' . $start_time . '" /><br />';
+		echo '<label>End Date</label><br /> <input name="event_end_date" value="' . $end_date . '" /><br />';
+		echo '<label>End Time</label><br /> <input name="event_end_time" value="' . $end_time . '" /><br />';
+		echo '<hr />';
+
 		echo '<p><strong>Price</strong></p>';
 		echo "<label>Price</label><br /> <input name=\"_event_price\" value=\"$price\" /><br />";
 		echo "<label>Price Notes</label><br /> <textarea name=\"_event_price_notes\">$price_notes</textarea><br />";
@@ -143,29 +155,32 @@
 	
 	function save_event_details($post_id) {
 		
-		if (isset($_REQUEST['ticket_id'])) {
-			update_post_meta($post_id, 'ticket_id', $_REQUEST['ticket_id']);
+		if (isset($_REQUEST['event_start_date'])) {
+			update_post_meta( $post_id, 'event_start_date', $_REQUEST['event_start_date']);
+			update_post_meta( $post_id, 'event_start_time', $_REQUEST['event_start_time']);
+			update_post_meta( $post_id, '_event_start_date_actual', date( 'Ymd', strtotime( $_REQUEST['event_start_date'] ) ) );
 	    }
 
-		if (isset($_REQUEST['_event_start_date'])) {
-			update_post_meta($post_id, '_event_start_date', $_REQUEST['_event_start_date']);
-			update_post_meta($post_id, '_event_start_date_actual', strtotime($_REQUEST['_event_start_date']));
+	    if (isset($_REQUEST['event_end_date'])) {
+			update_post_meta($post_id, 'event_end_date', $_REQUEST['event_end_date']);
+			update_post_meta($post_id, 'event_end_time', $_REQUEST['event_end_time']);
+			update_post_meta( $post_id, '_event_end_date_actual', date( 'Ymd', strtotime( $_REQUEST['event_end_date'] ) ) );
+	    }
+
+		if (isset($_REQUEST['ticket_id'])) {
+			update_post_meta( $post_id, 'ticket_id', $_REQUEST['ticket_id'] );
 	    }
 	    
-	    if (isset($_REQUEST['_event_start_time'])) {
-			update_post_meta($post_id, '_event_start_time', $_REQUEST['_event_start_time']);
+		if (isset($_REQUEST['event_venue'])) {
+			update_post_meta($post_id, 'event_venue', $_REQUEST['event_venue']);
 	    }
 	    
-		if (isset($_REQUEST['_event_venue'])) {
-			update_post_meta($post_id, '_event_venue', $_REQUEST['_event_venue']);
+	    if (isset($_REQUEST['event_address'])) {
+			update_post_meta($post_id, 'event_address', $_REQUEST['event_address']);
 	    }
 	    
-	    if (isset($_REQUEST['_event_address'])) {
-			update_post_meta($post_id, '_event_address', $_REQUEST['_event_address']);
-	    }
-	    
-	    if (isset($_REQUEST['_event_city'])) {
-			update_post_meta($post_id, '_event_city', $_REQUEST['_event_city']);
+	    if (isset($_REQUEST['event_city'])) {
+			update_post_meta($post_id, 'event_city', $_REQUEST['event_city']);
 	    }
 	    
 	    if (isset($_REQUEST['_event_state'])) {
@@ -195,10 +210,10 @@
 	    }
 	}
 	
-	function add_event_columns($columns) {
+	function lemonbox_event_add_event_columns($columns) {
 		unset($columns['title']);
 		unset($columns['date']);
-		
+
 		return array_merge($columns, 
 			array(
 				'title' => __('Event Name'),
@@ -216,7 +231,7 @@
 
 		switch ( $column ) {
 	      	case 'start_date':
-	      		echo get_post_meta( $post_id , '_event_start_date' , true );
+	      		echo get_post_meta( $post_id , 'event_start_date' , true );
 	      		break;
 	      	case 'location':
 	        	echo get_post_meta( $post_id , '_event_venue' , true ) . "<br />";
@@ -231,32 +246,32 @@
 	      		break;
 	    }
 	}
-	
-	function display_event_title($title) {
+
+	function lemonbox_event_filter_date( $date ) {
+
+		global $post; 
+
+		if ( $post->post_type == 'lemonbox_event' ) {
+
+			$start_date = get_post_meta( $post->ID, 'event_start_date', true );
+			$start_date = date( 'F j, Y', strtotime( $start_date ) );
+
+			$start_time = get_post_meta( $post->ID, 'event_start_time', true );
+			// $start_time = date( 'F j, Y', strtotime( $start_time ) );
+
+			return $start_date . ' at ' . $start_time;
+
+		} 
+
+		return $date;
 		
-		/* global $post;
-
-		if (($post->post_type == 'lemonbox_event') && in_the_loop()){
-			$meta = get_post_meta(get_the_ID());
-			$date = "";
-			$time = "";
-			
-			if (isset($meta['_event_start_date'][0])) $date = $meta['_event_start_date'][0];
-			if (isset($meta['_event_start_time'][0])) $time = $meta['_event_start_time'][0];
-			
-			$event_title = $title . "<br /><small style=\"font-weight: 200;\">$date $time</small>";
-			return $event_title;	
-		} else {
-			return $title;
-		} */
-
-		return $title;
-
 	}
 
 	function display_event_content($content) {
+		
 		global $post;
 		
+		/* 
 		if ( ($post->post_type == 'lemonbox_event') && is_single() && is_main_query() ){
 			
 			if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'signup') ) {
@@ -276,6 +291,9 @@
 		} else {
 			return $content;
 		}
+		*/
+
+		return $content;
 
 	}
 
@@ -290,27 +308,43 @@
 	    }
 	}
 	
-	function filter_events($query){
+	function lemonbox_event_filter_events($query){
 		
 		// Show events on homepage
 		if ( is_home() && $query->is_main_query() ) {
 
-			$query->set( 'post_type', array('post','lemonbox_event') );
+			// $query->set( 'post_type', array('post','lemonbox_event') );
 
 		}
 
-		if(is_post_type_archive('lemonbox_event')){
-			if(!is_admin() && $query->is_main_query()) {
+		if ( is_post_type_archive('lemonbox_event') ) {
 
-				query_posts(array(
-					'post_type' => 'lemonbox_event',
-					'orderby' => 'meta_value',
-					'meta_key' => '_event_start_date_actual',
-					'order' => 'ASC',
-					'paged' => ( get_query_var('paged') ? get_query_var('paged') : 1 )
-				));
+			if( !is_admin() && $query->is_main_query() ) {
+
+				$query->set( 'meta_key', '_event_start_date_actual' );
+				$query->set( 'orderby', 'meta_value_num' );
+				$query->set( 'order', 'ASC' );
+
+				$query->set( 'meta_query', 
+					array(
+						array(
+							'key' => '_event_start_date_actual',
+							'value' => date('Ymd'),
+							'compare' => '>='
+						)
+					)
+				);
+
+			} else if ( is_admin() && $query->is_main_query() ) {
+
+				$query->set( 'meta_key', '_event_start_date_actual' );
+				$query->set( 'orderby', 'meta_value_num' );
+				$query->set( 'order', 'DESC' );
+
 			}
-		}
+
+		} // endif
+
 	}
 
 	function events_install() {
@@ -437,22 +471,30 @@
 		$args = array(
 			'post_type' => 'lemonbox_event',
 			'posts_per_page' => 1,
-			'orderby' => 'meta_value',
-			'meta_key' => '_event_start_date_actual',
-			'order' => 'ASC'
+			'meta_key' => '_event_end_date_actual',
+			'orderby' => 'meta_value_num',
+			'order' => 'ASC',
+			'meta_query' => array(
+				array(
+					'key' => '_event_end_date_actual',
+					'value' => date('Ymd'),
+					// 'value' => strtotime(date('l F d, Y g:i A')),
+					'compare' => '>='
+				)
+			) 
 		);
 
 		$query = new WP_Query( $args );
 
-		if ( isset($query->posts) ) {
+		if ( isset($query->posts[0]) ) {
 
 			$event = $query->posts[0];
-			
-			$date = get_post_meta( $event->ID, '_event_start_date', true );
-			$time = get_post_meta( $event->ID, '_event_start_time', true );
+
+			$date = get_post_meta( $event->ID, 'event_start_date', true );
+			$time = get_post_meta( $event->ID, 'event_start_time', true );
 
 			$event->date = date( 'l F d, Y g:i A', strtotime( $date . ' ' . $time ) );
-			$event->time = get_post_meta( $event->ID, '_event_start_time', true );
+			$event->time = get_post_meta( $event->ID, 'event_start_time', true );
 			$event->permalink = get_permalink( $event->ID );
 			$event->ticket_id = get_post_meta( $event->ID, 'ticket_id', true );
 			
@@ -477,14 +519,15 @@
 
 	add_action( 'add_meta_boxes','event_details_box' );
 	add_action( 'save_post','save_event_details' );
-	add_filter( 'manage_event_posts_columns','add_event_columns' );
+	add_filter( 'manage_event_posts_columns','lemonbox_event_add_event_columns' );
 	add_action( 'manage_event_posts_custom_column', 'custom_event_column', 10, 2 );
 	
 	// Visual modifications
 	//add_filter('single_template','single_event_template');
 	add_filter( 'the_content','display_event_content' );
-	add_filter( 'the_title','display_event_title' );
-	add_action( 'pre_get_posts','filter_events' );
+	add_filter( 'get_the_date','lemonbox_event_filter_date' );
+	add_filter( 'the_date','lemonbox_event_filter_date' );
+	add_action( 'pre_get_posts','lemonbox_event_filter_events' );
 
 	// Ajax
 	add_action( 'wp_ajax_add_event_volunteer', 'add_event_volunteer' );
