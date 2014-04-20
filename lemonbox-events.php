@@ -39,7 +39,7 @@
 			'show_in_nav_menus' => true,
 			'rewrite' 			=> array( 'slug' => 'events' ),
 			'capability_type' => 'page',
-			'hierarchical'	=> true,
+			'hierarchical'	=> false,
 			'publicly_queryable' => true,
 			'query_var' => true,
 			'can_export' => true
@@ -217,7 +217,8 @@
 		return array_merge($columns, 
 			array(
 				'title' => __('Event Name'),
-				'start_date' => __('Date'),
+				'start_date' => __('Start Date'),
+				'end_date' => __('End Date'),
 				'location' => __('Location'),
 				'total_rsvps' =>__( 'RSVPs'),
 	      		'total_volunteers' =>__( 'Volunteers')
@@ -225,13 +226,16 @@
 	    );
 	}
 	
-	function custom_event_column($column,$post_id) {
+	function lemonbox_event_add_custom_column( $column, $post_id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "events_volunteers";
 
 		switch ( $column ) {
 	      	case 'start_date':
-	      		echo get_post_meta( $post_id , 'event_start_date' , true );
+	      		echo get_post_meta( $post_id , 'event_start_date' , true ) . ' ' . get_post_meta( $post_id, 'event_start_time', true );
+	      		break;
+	      	case 'end_date':
+	      		echo get_post_meta( $post_id , 'event_end_date' , true ) . ' ' . get_post_meta( $post_id, 'event_end_time', true );
 	      		break;
 	      	case 'location':
 	        	echo get_post_meta( $post_id , '_event_venue' , true ) . "<br />";
@@ -518,8 +522,8 @@
 
 	add_action( 'add_meta_boxes','event_details_box' );
 	add_action( 'save_post','save_event_details' );
-	add_filter( 'manage_event_posts_columns','lemonbox_event_add_event_columns' );
-	add_action( 'manage_event_posts_custom_column', 'custom_event_column', 10, 2 );
+	add_filter( 'manage_lemonbox_event_posts_columns','lemonbox_event_add_event_columns' );
+	add_action( 'manage_lemonbox_event_posts_custom_column', 'lemonbox_event_add_custom_column', 10, 2 );
 	
 	// Visual modifications
 	//add_filter('single_template','single_event_template');
