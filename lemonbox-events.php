@@ -323,6 +323,8 @@
 
 		if ( is_post_type_archive('lemonbox_event') ) {
 
+			$query->set( 'posts_per_page', 2 );
+
 			if( !is_admin() && $query->is_main_query() ) {
 
 				$query->set( 'meta_key', '_event_start_date_actual' );
