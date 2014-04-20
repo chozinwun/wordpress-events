@@ -158,13 +158,13 @@
 		if (isset($_REQUEST['event_start_date'])) {
 			update_post_meta( $post_id, 'event_start_date', $_REQUEST['event_start_date']);
 			update_post_meta( $post_id, 'event_start_time', $_REQUEST['event_start_time']);
-			update_post_meta( $post_id, '_event_start_date_actual', date( 'Ymd', strtotime( $_REQUEST['event_start_date'] ) ) );
+			update_post_meta( $post_id, '_event_start_date_actual', strtotime( $_REQUEST['event_start_date'] . ' ' . $_REQUEST['event_start_time'] ) );
 	    }
 
 	    if (isset($_REQUEST['event_end_date'])) {
 			update_post_meta($post_id, 'event_end_date', $_REQUEST['event_end_date']);
 			update_post_meta($post_id, 'event_end_time', $_REQUEST['event_end_time']);
-			update_post_meta( $post_id, '_event_end_date_actual', date( 'Ymd', strtotime( $_REQUEST['event_end_date'] ) ) );
+			update_post_meta( $post_id, '_event_end_date_actual', strtotime( $_REQUEST['event_end_date'] . ' ' . $_REQUEST['event_end_time'] ) );
 	    }
 
 		if (isset($_REQUEST['ticket_id'])) {
@@ -329,7 +329,7 @@
 					array(
 						array(
 							'key' => '_event_start_date_actual',
-							'value' => date('Ymd'),
+							'value' => strtotime(date('l F d, Y g:i A')),
 							'compare' => '>='
 						)
 					)
@@ -476,9 +476,8 @@
 			'order' => 'ASC',
 			'meta_query' => array(
 				array(
-					'key' => '_event_end_date_actual',
-					'value' => date('Ymd'),
-					// 'value' => strtotime(date('l F d, Y g:i A')),
+					'key' => '_event_start_date_actual',
+					'value' => strtotime(date('l F d, Y g:i A')),
 					'compare' => '>='
 				)
 			) 
