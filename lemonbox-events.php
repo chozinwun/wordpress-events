@@ -258,7 +258,7 @@
 		if ( $post->post_type == 'lemonbox_event' ) {
 
 			$start_date = get_post_meta( $post->ID, 'event_start_date', true );
-			$start_date = date( 'F j, Y', strtotime( $start_date ) );
+			$start_date = date( 'l F j, Y', strtotime( $start_date ) );
 
 			$start_time = get_post_meta( $post->ID, 'event_start_time', true );
 			// $start_time = date( 'F j, Y', strtotime( $start_time ) );
