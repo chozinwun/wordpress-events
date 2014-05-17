@@ -79,6 +79,7 @@
 	}
 
 	function event_details_box() {
+		
 		add_meta_box( 'event_information', 'Event Details', 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
 		add_meta_box( 'ticket_information', 'Ticket Information', 'event_meta_box_ticket_information', 'lemonbox_event', 'normal', 'high' );
 		add_meta_box( 'rsvp_information', 'RSVP', 'event_meta_box_rsvp', 'lemonbox_event', 'normal', 'high' );
