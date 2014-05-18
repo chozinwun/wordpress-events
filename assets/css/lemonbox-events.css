@@ -76,12 +76,12 @@
 	display: inline-block; }
 
 		.timer-col span {
-		height: 40px;
+		height: 45px;
 		display: block;
 		text-align: center;
-		line-height: 33px;
+		line-height: 40px;
 		font-size: 18px;
-		width: 40px;
+		width: 45px;
 		font-weight: 300; }
 
 @media (max-width: 992px) {
