@@ -79,18 +79,27 @@
 		height: 45px;
 		display: block;
 		text-align: center;
-		line-height: 40px;
+		line-height: 36px;
 		font-size: 18px;
-		width: 45px;
+		width: 50px;
 		font-weight: 300; }
 
 	#upcoming-event h2 { 
 	font-weight: inherit; }
 
+	.event-countdown {
+		padding-top: 5px;
+	}
+
 @media (max-width: 992px) {
 
 	#upcoming-event h2 {
-		font-size: 26px; }
+		font-size: 26px;
+		margin-bottom: 40px; }
+
+	.timer-col {
+		margin: 0;
+	}
 
 }
 

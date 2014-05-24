@@ -1,1 +1,0 @@
-<style>.archive .event .wp-post-image, .archive .event footer.entry-meta { display: none; }</style>

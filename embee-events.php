@@ -1,6 +1,6 @@
 <?php
 	/*
-	Plugin Name: Lemonbox Events
+	Plugin Name: Embee Events
 	Description: Simple Events for WordPress
 	Version: 0.1
 	License: GPL
@@ -8,6 +8,16 @@
 	Author URI: http://marcusbattle.com
 	*/
 	
+	include 'inc/shortcodes.php';
+
+
+	function embee_events_admin_scripts() {
+
+		wp_enqueue_script( 'jquery-ui-core', '//code.jquery.com/ui/1.10.4/jquery-ui.min.js' );
+	}
+
+	add_action( 'admin_enqueue_scripts', 'embee_events_admin_scripts' );
+
 	function events_post_type() {
 
 		date_default_timezone_set('America/New_York');
@@ -45,7 +55,7 @@
 			'can_export' => true
 		);
 
-		register_post_type('lemonbox_event',$args);
+		register_post_type('embee_event',$args);
 
 		if ( isset($_REQUEST['rsvp_status']) ) {
 			setcookie( 'event_rsvp_status', $_REQUEST['rsvp_status'], time()+3600*24*100, '/' );
@@ -54,7 +64,7 @@
 	}
 
 	function event_load_scripts() {
-		wp_register_script('wp-events-js',plugins_url('/assets/js/lemonbox-events.js',__FILE__),array('jquery'),false,true);
+		wp_register_script('wp-events-js',plugins_url('/assets/js/embee.events.js',__FILE__),array('jquery'),false,true);
 		wp_enqueue_script('wp-events-js');
 
 		wp_localize_script(
@@ -80,9 +90,9 @@
 
 	function event_details_box() {
 		
-		add_meta_box( 'event_information', 'Event Details', 'event_details_box_content', 'lemonbox_event', 'normal', 'high' );
-		add_meta_box( 'ticket_information', 'Ticket Information', 'event_meta_box_ticket_information', 'lemonbox_event', 'normal', 'high' );
-		add_meta_box( 'rsvp_information', 'RSVP', 'event_meta_box_rsvp', 'lemonbox_event', 'normal', 'high' );
+		add_meta_box( 'event_information', 'Event Details', 'event_details_box_content', 'embee_event', 'normal', 'high' );
+		add_meta_box( 'ticket_information', 'Ticket Information', 'event_meta_box_ticket_information', 'embee_event', 'normal', 'high' );
+		add_meta_box( 'rsvp_information', 'RSVP', 'event_meta_box_rsvp', 'embee_event', 'normal', 'high' );
 		
 	}
 	
@@ -135,9 +145,9 @@
 		$state = get_post_meta( $post->ID, 'event_state', true );
 		$zip = get_post_meta( $post->ID, 'event_zip', true );
 
-		echo '<label>Start Date</label><br /> <input name="event_start_date" value="' . $start_date . '" /><br />';
+		echo '<label>Start Date</label><br /> <input type="date" name="event_start_date" value="' . $start_date . '" /><br />';
 		echo '<label>Start Time</label><br /> <input name="event_start_time" value="' . $start_time . '" /><br />';
-		echo '<label>End Date</label><br /> <input name="event_end_date" value="' . $end_date . '" /><br />';
+		echo '<label>End Date</label><br /> <input type="date" name="event_end_date" value="' . $end_date . '" /><br />';
 		echo '<label>End Time</label><br /> <input name="event_end_time" value="' . $end_time . '" /><br />';
 		echo '<hr />';
 
@@ -216,7 +226,7 @@
 	    }
 	}
 	
-	function lemonbox_event_add_event_columns($columns) {
+	function embee_event_add_event_columns($columns) {
 		unset($columns['title']);
 		unset($columns['date']);
 
@@ -232,7 +242,7 @@
 	    );
 	}
 	
-	function lemonbox_event_add_custom_column( $column, $post_id ) {
+	function embee_event_add_custom_column( $column, $post_id ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . "events_volunteers";
 
@@ -257,11 +267,11 @@
 	    }
 	}
 
-	function lemonbox_event_filter_date( $date ) {
+	function embee_event_filter_date( $date ) {
 
 		global $post; 
 
-		if ( $post->post_type == 'lemonbox_event' ) {
+		if ( $post->post_type == 'embee_event' ) {
 
 			$start_date = get_post_meta( $post->ID, 'event_start_date', true );
 			$start_date = date( 'l F j, Y', strtotime( $start_date ) );
@@ -281,7 +291,7 @@
 		
 		global $post;
 		
-		if ( ($post->post_type == 'lemonbox_event') && is_single() && is_main_query() ){
+		if ( ($post->post_type == 'embee_event') && is_single() && is_main_query() ){
 			
 			require_once( plugin_dir_path(__FILE__) . 'templates/event-details.php' );	
 
@@ -294,7 +304,7 @@
 	function single_event_template($single_template) {
 		global $post;
 		
-		if ($post->post_type == 'lemonbox_event') {
+		if ($post->post_type == 'embee_event') {
 			if (is_single()) {
 				$single_template = plugin_dir_path( __FILE__ ) . 'templates/single-event.php';
 	    		return $single_template;
@@ -302,16 +312,16 @@
 	    }
 	}
 	
-	function lemonbox_event_filter_events($query){
+	function embee_event_filter_events($query){
 		
 		// Show events on homepage
 		if ( is_home() && $query->is_main_query() ) {
 
-			// $query->set( 'post_type', array('post','lemonbox_event') );
+			// $query->set( 'post_type', array('post','embee_event') );
 
 		}
 
-		if ( is_post_type_archive('lemonbox_event') ) {
+		if ( is_post_type_archive('embee_event') ) {
 
 			if( !is_admin() && $query->is_main_query() ) {
 
@@ -463,7 +473,7 @@
 	function get_next_event() {
 
 		$args = array(
-			'post_type' => 'lemonbox_event',
+			'post_type' => 'embee_event',
 			'posts_per_page' => 1,
 			'meta_key' => '_event_end_date_actual',
 			'orderby' => 'meta_value_num',
@@ -490,7 +500,8 @@
 			$event->time = get_post_meta( $event->ID, 'event_start_time', true );
 			$event->permalink = get_permalink( $event->ID );
 			$event->ticket_id = get_post_meta( $event->ID, 'ticket_id', true );
-			
+			$event->summary = get_the_content( $event->ID );
+
 			if ( $event->ticket_id ) {
 				$event->ticket = get_post( $event->ticket_id );
 				$event->ticket->meta = get_post_meta( $event->ticket_id );
@@ -512,15 +523,15 @@
 
 	add_action( 'add_meta_boxes','event_details_box' );
 	add_action( 'save_post','save_event_details' );
-	add_filter( 'manage_lemonbox_event_posts_columns','lemonbox_event_add_event_columns' );
-	add_action( 'manage_lemonbox_event_posts_custom_column', 'lemonbox_event_add_custom_column', 10, 2 );
+	add_filter( 'manage_embee_event_posts_columns','embee_event_add_event_columns' );
+	add_action( 'manage_embee_event_posts_custom_column', 'embee_event_add_custom_column', 10, 2 );
 	
 	// Visual modifications
 	//add_filter('single_template','single_event_template');
 	add_filter( 'the_content','display_event_content' );
-	add_filter( 'get_the_date','lemonbox_event_filter_date' );
-	add_filter( 'the_date','lemonbox_event_filter_date' );
-	add_action( 'pre_get_posts','lemonbox_event_filter_events' );
+	add_filter( 'get_the_date','embee_event_filter_date' );
+	add_filter( 'the_date','embee_event_filter_date' );
+	add_action( 'pre_get_posts','embee_event_filter_events' );
 
 	// Ajax
 	add_action( 'wp_ajax_add_event_volunteer', 'add_event_volunteer' );
