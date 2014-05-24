@@ -121,13 +121,19 @@
 
 		$meta = get_post_meta($post->ID);
 
-		$price = isset($meta['_event_price']) ? $meta['_event_price'][0] : '';
-		$price_notes = isset($meta['_event_price_notes']) ? $meta['_event_price_notes'][0] : '';
+		$price = get_post_meta( $post->ID, 'event_price', true );
+		$price_notes = get_post_meta( $post->ID, 'event_price_notes', true );
 
 		$start_date = get_post_meta( $post->ID, 'event_start_date', true );
 		$start_time = get_post_meta( $post->ID, 'event_start_time', true );
 		$end_date = get_post_meta( $post->ID, 'event_end_date', true );
 		$end_time = get_post_meta( $post->ID, 'event_end_time', true );
+
+		$venue = get_post_meta( $post->ID, 'event_venue', true );
+		$address = get_post_meta( $post->ID, 'event_address', true );
+		$city = get_post_meta( $post->ID, 'event_city', true );
+		$state = get_post_meta( $post->ID, 'event_state', true );
+		$zip = get_post_meta( $post->ID, 'event_zip', true );
 
 		echo '<label>Start Date</label><br /> <input name="event_start_date" value="' . $start_date . '" /><br />';
 		echo '<label>Start Time</label><br /> <input name="event_start_time" value="' . $start_time . '" /><br />';
@@ -136,16 +142,15 @@
 		echo '<hr />';
 
 		echo '<p><strong>Price</strong></p>';
-		echo "<label>Price</label><br /> <input name=\"_event_price\" value=\"$price\" /><br />";
-		echo "<label>Price Notes</label><br /> <textarea name=\"_event_price_notes\">$price_notes</textarea><br />";
+		echo "<label>Price</label><br /> <input name=\"event_price\" value=\"$price\" /><br />";
+		echo "<label>Price Notes</label><br /> <textarea name=\"event_price_notes\">$price_notes</textarea><br />";
 		echo '<p><strong>Location</strong></p>';
 		echo '<input type="hidden" name="event_details_nonce" id="event_details_nonce" value="' . wp_create_nonce( plugin_basename(__FILE__) ) . '" />';
-		echo '<label>Venue</label><br /> <input name="_event_venue" value="' . $meta['_event_venue'][0] . '" /><br />';
-		echo '<label>Address</label><br /> <input name="_event_address" value="' . $meta['_event_address'][0] . '" /><br />';
-		echo '<label>City</label><br /> <input name="_event_city" value="' . $meta['_event_city'][0] . '" /><br />';
-		echo '<label>State</label><br /> <input name="_event_state" value="' . $meta['_event_state'][0] . '" /><br />';
-		echo '<label>Zip Code</label><br /> <input name="_event_zip" value="' . $meta['_event_zip'][0] . '" /><br />';
-		echo '<label>Phone</label><br /> <input name="_event_phone" value="' . $meta['_event_phone'][0] . '" /><br />';
+		echo '<label>Venue</label><br /> <input name="event_venue" value="' . $venue . '" /><br />';
+		echo '<label>Address</label><br /> <input name="event_address" value="' . $address . '" /><br />';
+		echo '<label>City</label><br /> <input name="event_city" value="' . $city . '" /><br />';
+		echo '<label>State</label><br /> <input name="event_state" value="' . $state . '" /><br />';
+		echo '<label>Zip Code</label><br /> <input name="event_zip" value="' . $zip . '" /><br />';
 
 		if ( $meta['_event_allow_volunteers'][0] ) {
 			echo '<label>Allow Volunteers?</label> <input name="_event_allow_volunteers" value="1" type="checkbox" checked="true" />';
@@ -184,24 +189,24 @@
 			update_post_meta($post_id, 'event_city', $_REQUEST['event_city']);
 	    }
 	    
-	    if (isset($_REQUEST['_event_state'])) {
-			update_post_meta($post_id, '_event_state', $_REQUEST['_event_state']);
+	    if (isset($_REQUEST['event_state'])) {
+			update_post_meta($post_id, 'event_state', $_REQUEST['event_state']);
 	    }
 
-	    if (isset($_REQUEST['_event_zip'])) {
-			update_post_meta($post_id, '_event_zip', $_REQUEST['_event_zip']);
+	    if (isset($_REQUEST['event_zip'])) {
+			update_post_meta($post_id, 'event_zip', $_REQUEST['event_zip']);
 	    }
 	    
-	    if (isset($_REQUEST['_event_phone'])) {
-			update_post_meta($post_id, '_event_phone', $_REQUEST['_event_phone']);
+	    if (isset($_REQUEST['event_phone'])) {
+			update_post_meta($post_id, 'event_phone', $_REQUEST['event_phone']);
 	    }
 
-	    if (isset($_REQUEST['_event_price'])) {
-			update_post_meta($post_id, '_event_price', $_REQUEST['_event_price']);
+	    if (isset($_REQUEST['event_price'])) {
+			update_post_meta($post_id, 'event_price', $_REQUEST['event_price']);
 	    }
 
-	    if (isset($_REQUEST['_event_price_notes'])) {
-			update_post_meta($post_id, '_event_price_notes', $_REQUEST['_event_price_notes']);
+	    if (isset($_REQUEST['event_price_notes'])) {
+			update_post_meta($post_id, 'event_price_notes', $_REQUEST['event_price_notes']);
 	    }
 
 	    if (isset($_REQUEST['_event_allow_volunteers'])) {
@@ -276,27 +281,11 @@
 		
 		global $post;
 		
-		/* 
 		if ( ($post->post_type == 'lemonbox_event') && is_single() && is_main_query() ){
 			
-			if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'signup') ) {
-				require_once ( plugin_dir_path(__FILE__) . 'templates/event-signup.php' );	
+			require_once( plugin_dir_path(__FILE__) . 'templates/event-details.php' );	
 
-			} else if ( isset($_REQUEST['show']) &&  ($_REQUEST['show'] == 'login') ) {
-				require_once ( plugin_dir_path(__FILE__) . 'templates/event-login.php' );
-
-			} else {
-				require_once( plugin_dir_path(__FILE__) . 'templates/event-content.php' );	
-			}
-
-		} elseif (is_archive()) {
-			include plugin_dir_path(__FILE__) . 'templates/event-archive.php';
-			return $post->post_excerpt;
-
-		} else {
-			return $content;
-		}
-		*/
+		} 
 
 		return $content;
 
