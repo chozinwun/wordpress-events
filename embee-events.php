@@ -49,7 +49,7 @@
 			'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes'),
 			'has_archive'   => true,
 			'show_in_nav_menus' => true,
-			'rewrite' 			=> false,
+			'rewrite' 			=> array( 'slug' => 'events' ),
 			'capability_type' => 'page',
 			'hierarchical'	=> false,
 			'publicly_queryable' => true,
@@ -66,7 +66,7 @@
 
 		$event_rewrite = '/events/%year%/%monthnum%/%embee_event%';
 
-		add_rewrite_tag( '%embee_event%', '([^/]+)', 'embee_event=' );
+		add_rewrite_tag( '%embee_event%', '([^/]+)' );
 		add_permastruct( 'embee_event', $event_rewrite, false );
 
 	}
@@ -82,7 +82,7 @@
 	    	$dates[] = date('m', strtotime($post->post_date) );
 	    	
 	    	$permalink = str_replace( $date_vars, $dates, $permalink );
-	        // return add_query_arg( $_GET, $permalink );
+	        
 	    }
 
 	    return $permalink;
