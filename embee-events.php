@@ -322,8 +322,13 @@
 		global $post;
 		
 		if ( ($post->post_type == 'embee_event') && is_single() && is_main_query() ){
-			
-			require_once( plugin_dir_path(__FILE__) . 'templates/event-details.php' );	
+
+			ob_start();  // start buffer
+   	
+		   	include( plugin_dir_path(__FILE__) . 'templates/event-details.php' );  // read in buffer
+		   	
+		   	$content .= ob_get_contents();  // get buffer content
+		   	ob_end_clean();  // delete buffer content
 
 		} 
 
