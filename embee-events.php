@@ -20,6 +20,8 @@
 
 	function events_post_type() {
 
+		global $wp_rewrite;
+
 		date_default_timezone_set('America/New_York');
 
 		$labels = array(
@@ -47,7 +49,7 @@
 			'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes'),
 			'has_archive'   => true,
 			'show_in_nav_menus' => true,
-			'rewrite' 			=> array( 'slug' => 'events' ),
+			'rewrite' 			=> false,
 			'capability_type' => 'page',
 			'hierarchical'	=> false,
 			'publicly_queryable' => true,
@@ -61,7 +63,35 @@
 			setcookie( 'event_rsvp_status', $_REQUEST['rsvp_status'], time()+3600*24*100, '/' );
 		}
 
+
+		$event_rewrite = '/events/%year%/%monthnum%/%embee_event%';
+
+		add_rewrite_tag( '%embee_event%', '([^/]+)', 'embee_event=' );
+		add_permastruct( 'embee_event', $event_rewrite, false );
+
 	}
+
+	// Adapted from get_permalink function in wp-includes/link-template.php
+	function event_permalink( $permalink, $post ) {
+
+	    if ( 'embee_event' == get_post_type( $post ) ) {
+	    	
+	    	$date_vars = array( '%year%', '%monthnum%' );
+	    	
+	    	$dates[] = date('Y', strtotime($post->post_date) );
+	    	$dates[] = date('m', strtotime($post->post_date) );
+	    	
+	    	$permalink = str_replace( $date_vars, $dates, $permalink );
+	        // return add_query_arg( $_GET, $permalink );
+	    }
+
+	    return $permalink;
+
+	}
+
+	// Add filter to plugin init function
+	add_filter( 'post_type_link', 'event_permalink', 10, 2 ); 
+
 
 	function event_load_scripts() {
 		wp_register_script('wp-events-js',plugins_url('/assets/js/embee.events.js',__FILE__),array('jquery'),false,true);
