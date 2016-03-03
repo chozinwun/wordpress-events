@@ -32,12 +32,13 @@
 
          <?php elseif ( $upcoming_event && ( $upcoming_event->timestamp < current_time('timestamp') ) ): ?>
 
-            <div class="col-sm-5 col-md-5">
+            <div class="col-sm-6 col-md-6">
                <h4>Happening Now</h4>
                <h2>
                   <a href="<?php echo $upcoming_event->permalink ?>"><?php echo $upcoming_event->post_title ?></a>
-                  <br /><small><?php echo $upcoming_event->date_formatted ?><br />Through <?php echo $upcoming_event->end_date_formatted ?></small>
+                  <br /><small><?php echo $upcoming_event->date_formatted ?></small>
                </h2>
+               <span>Through <?php echo $upcoming_event->end_date_formatted ?></span>
                <p><?php $upcoming_event->excerpt; ?></p>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-12 ">
