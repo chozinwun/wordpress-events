@@ -326,6 +326,7 @@ class Ambassador_Events {
 		$args = array(
 			'post_type' => 'ambassador_event',
 			'posts_per_page' => 1,
+			'order'	=> 'ASC',
 			'meta_query' => array(
 				array(
 					'key' => '_ambassador_event_end_date',
