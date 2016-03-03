@@ -50,8 +50,8 @@ class Ambassador_Events {
 		// // Visual modifications
 		// //add_filter('single_template','single_event_template');
 		// add_filter( 'the_content','display_event_content' );
-		// add_filter( 'get_the_date','embee_event_filter_date' );
-		// add_filter( 'the_date','embee_event_filter_date' );
+		add_filter( 'get_the_date', array( $this, 'embee_event_filter_date' ) );
+		add_filter( 'the_date', array( $this, 'embee_event_filter_date' ) );
 		add_action( 'pre_get_posts', array( $this, 'embee_event_filter_events' ) );
 
 		$this->shortcode->hooks();
@@ -232,16 +232,16 @@ class Ambassador_Events {
 
 	}
 
-	function embee_event_filter_date( $date ) {
+	public function embee_event_filter_date( $date ) {
 
 		global $post;
 
 		if ( $post->post_type == 'ambassador_event' ) {
 
-			$start_date = get_post_meta( $post->ID, 'event_start_date', true );
+			$start_date = get_post_meta( $post->ID, '_ambassador_event_start_date', true );
 			$start_date = date( 'l F j, Y', strtotime( $start_date ) );
 
-			$start_time = get_post_meta( $post->ID, 'event_start_time', true );
+			$start_time = get_post_meta( $post->ID, '_ambassador_event_start_time', true );
 			// $start_time = date( 'F j, Y', strtotime( $start_time ) );
 
 			return $start_date . ' at ' . $start_time;
