@@ -327,6 +327,7 @@ class Ambassador_Events {
 			'post_type' => 'ambassador_event',
 			'posts_per_page' => 1,
 			'order'	=> 'ASC',
+			'post_status' => 'publish',
 			'meta_query' => array(
 				array(
 					'key' => '_ambassador_event_end_date',
