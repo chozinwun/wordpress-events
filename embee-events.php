@@ -52,7 +52,7 @@ class Ambassador_Events {
 		// add_filter( 'the_content','display_event_content' );
 		// add_filter( 'get_the_date','embee_event_filter_date' );
 		// add_filter( 'the_date','embee_event_filter_date' );
-		// add_action( 'pre_get_posts','embee_event_filter_events' );
+		add_action( 'pre_get_posts', array( $this, 'embee_event_filter_events' ) );
 
 		$this->shortcode->hooks();
 
@@ -291,18 +291,18 @@ class Ambassador_Events {
 
 		}
 
-		if ( is_post_type_archive('embee_event') ) {
+		if ( is_post_type_archive('ambassador_event') ) {
 
 			if( !is_admin() && $query->is_main_query() ) {
 
-				$query->set( 'meta_key', '_event_start_date_actual' );
+				$query->set( 'meta_key', '_ambassador_event_start_date_actual' );
 				$query->set( 'orderby', 'meta_value_num' );
 				$query->set( 'order', 'ASC' );
 
 				$query->set( 'meta_query',
 					array(
 						array(
-							'key' => '_event_start_date_actual',
+							'key' => '_ambassador_event_start_date_actual',
 							'value' => strtotime( date('l F d, Y g:i A') ),
 							'compare' => '>='
 						)
@@ -311,7 +311,7 @@ class Ambassador_Events {
 
 			} else if ( is_admin() && $query->is_main_query() ) {
 
-				$query->set( 'meta_key', '_event_start_date_actual' );
+				$query->set( 'meta_key', '_ambassador_event_start_date_actual' );
 				$query->set( 'orderby', 'meta_value_num' );
 				$query->set( 'order', 'DESC' );
 
@@ -319,61 +319,6 @@ class Ambassador_Events {
 
 		} // endif
 
-	}
-
-	function signup_volunteer() {
-		global $wpdb;
-
-		$user_id = username_exists( $user_name );
-		$user_email = $_REQUEST['user_email'];
-
-		if ( empty($_REQUEST['user_pass']) ) {
-			echo json_encode( array( 'success' => false, 'msg' => 'Your password cannot be blank') );
-			exit;
-		} else if ($_REQUEST['user_pass'] != $_REQUEST['user_pass_retype']) {
-			echo json_encode( array( 'success' => false, 'msg' => 'Your passwords don\'t match') );
-			exit;
-		}
-
-		if ( !$user_id && email_exists($user_email) == false ) {
-			$user_params = array(
-				'user_pass' => $_REQUEST['user_pass'],
-				'user_email' => $_REQUEST['user_email'],
-				'user_login' => $_REQUEST['user_email'],
-				'first_name' => $_REQUEST['first_name'],
-				'last_name' => $_REQUEST['last_name'],
-				'display_name' => $_REQUEST['first_name'] . ' ' . $_REQUEST['last_name'],
-				'nickname' => $_REQUEST['first_name'] . $_REQUEST['last_name'],
-				'user_nicename' => $_REQUEST['first_name'] . $_REQUEST['last_name']
-			);
-
-			$user_id = wp_insert_user( $user_params );
-
-			update_user_meta( $user_id, 'user_mobile', $_REQUEST['user_mobile'] );
-
-			return login_volunteer();
-		} else {
-			echo json_encode( array( 'success' => false, 'msg' => 'This email has already been used') );
-			exit;
-		}
-
-	}
-
-	function login_volunteer() {
-
-		$creds = array();
-		$creds['user_login'] = $_REQUEST['user_email'];
-		$creds['user_password'] = $_REQUEST['user_pass'];
-		$creds['remember'] = true;
-
-		$user = wp_signon( $creds, false );
-
-		if ( is_wp_error($user) ) {
-			echo json_encode( array( 'success' => false, 'msg' => $user->get_error_message() ) );
-			exit;
-		}
-
-		return $user;
 	}
 
 	static public function get_next_event() {
