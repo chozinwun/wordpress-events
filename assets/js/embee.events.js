@@ -1,8 +1,8 @@
 (function($){
 
 	// Countdown timer for events
-	// var target_date = new Date( $('.event-countdown').data('date') ).getTime();
-	var target_date = $('.event-countdown').data('date');
+	var target_date = new Date( $('.event-countdown').data('date') ).getTime();
+	// var target_date = $('.event-countdown').data('date');
 	var days, hours, minutes, seconds;
 
 	if ( target_date ) {

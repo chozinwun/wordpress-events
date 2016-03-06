@@ -3,7 +3,7 @@
 <div id="upcoming-event" class="container-fluid">
    <div class="container">
       <div class="row">
-         <?php if ( $upcoming_event && ( $upcoming_event->timestamp > current_time('timestamp') ) ): ?>
+         <?php if ( $upcoming_event && ( current_time('timestamp') < $upcoming_event->timestamp ) ): ?>
             <div class="col-sm-5 col-md-5">
                <h4>Next Upcoming Event</h4>
                <h2>
@@ -14,7 +14,7 @@
             </div>
             <div class="col-md-4 col-sm-4 col-xs-12">
                <h4>Event Begins In</h4>
-               <div class="event-countdown event-countdown-small" data-date="<?php echo $upcoming_event->timestamp ?>" style="display: none;">
+               <div class="event-countdown event-countdown-small" data-date="<?php echo $upcoming_event->mysql ?>" style="display: none;">
                   <div class="timer-col"><span id="days" class="label label-primary"></span><span class="timer-type">days</span></div>
                   <div class="timer-col"><span id="hours" class="label label-default"></span><span class="timer-type">hrs</span></div>
                   <div class="timer-col"><span id="minutes" class="label label-default"></span><span class="timer-type">mins</span></div>
