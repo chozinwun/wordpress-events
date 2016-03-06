@@ -3,35 +3,17 @@
 	display: block;
 	min-height: 150px; }
 
-		#event-details .left { 
+		#event-details .left {
 		float: left; width: 50%; margin-right: 50px; display: block; }
 
-		#event-details .right { 
+		#event-details .right {
 		float: right; width: 40%; }
 
-		.entry-content h1.price { 
+		.entry-content h1.price {
 			font-weight: 200;
 			font-size: 48px;
 			margin-top: 0px;
 			line-height: 38px; }
-
-	.volunteer-button {
-	width: 150px;
-	background: #CCC;
-	font: inherit;
-	display: inline-block;
-	line-height: 45px;
-	text-align: center;
-	border-radius: 3px;
-	-webkit-border-radius: 3px;
-	-moz-border-radius: 3px;
-	cursor: pointer;
-	color: #333;
-	font-weight: bold; }
-
-		.volunteer-button:hover {
-		background: #333;
-		color: white; }
 
 	form.volunteer-form ul {
 	list-style: none;
@@ -60,7 +42,7 @@
 	clear: both;
 	margin-top: 15px; }
 
-	#upcoming-event { 
+	#upcoming-event {
 		background-color: #f1f1f1;
 		padding-top: 35px;
 		padding-bottom: 20px; }
@@ -68,12 +50,13 @@
 		#upcoming-event h2,
 		#upcoming-event h3,
 		#upcoming-event h4,
-		#upcoming-event h5 { 
+		#upcoming-event h5 {
 		margin-top: 0; }
 
 	.timer-col {
 	margin-right: 3%;
-	display: inline-block; }
+	display: inline-block;
+	width: initial; }
 
 		.timer-col span {
 		height: 45px;
@@ -84,11 +67,38 @@
 		width: 50px;
 		font-weight: 300; }
 
-	#upcoming-event h2 { 
+	#upcoming-event h2 {
 	font-weight: inherit; }
 
 	.event-countdown {
 		padding-top: 5px;
+	}
+
+	#upcoming-event {
+		padding: 80px;
+	}
+
+	#upcoming-event .row:after {
+	   content: ".";
+	   visibility: hidden;
+	   display: block;
+	   height: 0;
+	   clear: both;
+	}
+
+	#upcoming-event #date-time {
+		width: 50%;
+		float: left;
+		padding-right: 10px;
+	}
+
+	#upcoming-event #countdown {
+		width: 50%;
+		float: left;
+	}
+
+	#upcoming-event-permalinks a:first-of-type {
+		margin-right: 20px;
 	}
 
 @media (max-width: 992px) {
