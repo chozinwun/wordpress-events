@@ -14,6 +14,14 @@ function brand_show_event_day_of_week( $post_id = 0 ) {
 	echo brand_get_event_day_of_week( $post_id );
 }
 
+function brand_show_event_day( $post_id = 0 ) {
+	echo brand_get_event_day( $post_id );
+}
+
+function brand_show_event_month( $post_id = 0 ) {
+	echo brand_get_event_month( $post_id );
+}
+
 function brand_show_event_date( $post_id = 0 ) {
 
 	$event_start_date = brand_get_event_start_date( $post_id );
@@ -47,6 +55,28 @@ function brand_get_event_day_of_week( $post_id = 0 ) {
 	$event_start_date_timestamp = strtotime( $event_start_date );
 
 	$day_of_week = date( 'l', $event_start_date_timestamp );
+
+	return $day_of_week;
+
+}
+
+function brand_get_event_day( $post_id = 0 ) {
+
+	$event_start_date = brand_get_event_start_date( $post_id );
+	$event_start_date_timestamp = strtotime( $event_start_date );
+
+	$day_of_week = date( 'd', $event_start_date_timestamp );
+
+	return $day_of_week;
+
+}
+
+function brand_get_event_month( $post_id = 0 ) {
+
+	$event_start_date = brand_get_event_start_date( $post_id );
+	$event_start_date_timestamp = strtotime( $event_start_date );
+
+	$day_of_week = date( 'M', $event_start_date_timestamp );
 
 	return $day_of_week;
 
