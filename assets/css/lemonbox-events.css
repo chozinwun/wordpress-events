@@ -1,3 +1,109 @@
+
+.calendar-item {
+	display: table;
+}
+
+.calendar-item:after {
+   visibility: hidden;
+   display: block;
+   height: 0;
+   clear: both;
+}
+
+.calendar-item .content {
+	width: 75%;
+	display: table-cell;
+    vertical-align: middle;
+}
+
+.calendar-item .content span {
+	display: block;
+	width: 100%;
+	line-height: 24px;
+}
+
+.calendar-item .content .event-title {
+	font-weight: bold;
+}
+
+.calendar-item .content .event-location {
+	color: #666;
+}
+
+.calendar-item .content .event-date {
+	color: #666;
+	margin-top: 5px;
+}
+
+.calendar-entry {
+	background-color: #3c3d41;
+	width: 20%;
+	color: #fff;
+	padding: 15px;
+	display: table-cell;
+    vertical-align: middle;
+    height: 30%;
+}
+
+.calendar-entry span {
+	width: 100%;
+	display: block;
+	text-align: center;
+}
+
+.calendar-entry span.day-of-week-label {
+	color: #999;
+	font-size: 14px;
+}
+
+.calendar-entry span.date-label {
+	font-size: 50px;
+	letter-spacing: 4px;
+	font-weight: 200;
+}
+
+.calendar-entry span.month-label {
+	text-transform: uppercase;
+	letter-spacing: 7px;
+	color: #999;
+}
+
+.calendar-item .reveal-more {
+	text-align: center;
+	display: table-cell;
+	vertical-align: middle;
+	padding: 10px;
+}
+
+.calendar-item .reveal-more .fa {
+	font-size: 40px;
+	color: #999;
+	display: block;
+}
+
+.calendar-item .reveal-more:hover .fa {
+	color: inherit;
+}
+
+#upcoming-event {
+	margin-bottom: 20px;
+}
+
+#upcoming-event .event-location {
+	display: block;
+	margin-bottom: 10px;
+	color: #999;
+}
+
+#upcoming-event .view-all {
+	color: #999;
+}
+
+.timer-col span.label {
+	border: 2px solid #CCC;
+	border-radius: 2px;
+}
+
 	#event-details {
 	width: 100%;
 	display: block;
@@ -62,7 +168,7 @@
 		height: 45px;
 		display: block;
 		text-align: center;
-		line-height: 36px;
+		line-height: 45px;
 		font-size: 18px;
 		width: 50px;
 		font-weight: 300; }
@@ -129,6 +235,7 @@
 	#upcoming-event #countdown {
 		width: 100%;
 		float: none;
+		display: none;
 	}
 
 	#upcoming-event-permalinks a {

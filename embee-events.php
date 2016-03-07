@@ -28,6 +28,7 @@ class Ambassador_Events {
 			include_once 'includes/third-party/CMB2/init.php';
 		}
 
+		include_once 'includes/functions.php';
 		include_once 'includes/shortcodes.php';
 
 		$this->shortcode = new Ambassador_Events_Shortcode();
@@ -37,6 +38,10 @@ class Ambassador_Events {
 	public function hooks() {
 
 		add_action( 'init', array( $this, 'events_post_type' ) );
+		add_action( 'init', array( $this, 'register_location_taxonomy' ) );
+		add_action( 'admin_menu', array( $this, 'hide_location_taxonomy_metabox' ) );
+
+		add_action( 'parse_request', array( $this, 'modify_event_query' ) );
 		add_filter( 'post_type_link', array( $this, 'event_permalink' ), 10, 2 );
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
@@ -52,7 +57,7 @@ class Ambassador_Events {
 		// add_filter( 'the_content','display_event_content' );
 		add_filter( 'get_the_date', array( $this, 'embee_event_filter_date' ) );
 		add_filter( 'the_date', array( $this, 'embee_event_filter_date' ) );
-		add_action( 'pre_get_posts', array( $this, 'embee_event_filter_events' ) );
+		add_action( 'pre_get_posts', array( $this, 'filter_event_query' ) );
 
 		$this->shortcode->hooks();
 
@@ -106,6 +111,45 @@ class Ambassador_Events {
 
 	}
 
+	public function register_location_taxonomy() {
+
+		$labels = array(
+			'name'                       => _x( 'Locations', 'taxonomy general name' ),
+			'singular_name'              => _x( 'Location', 'taxonomy singular name' ),
+			'search_items'               => __( 'Search Locations' ),
+			'popular_items'              => __( 'Popular Locations' ),
+			'all_items'                  => __( 'All Locations' ),
+			'parent_item'                => null,
+			'parent_item_colon'          => null,
+			'edit_item'                  => __( 'Edit Location' ),
+			'update_item'                => __( 'Update Location' ),
+			'add_new_item'               => __( 'Add New Location' ),
+			'new_item_name'              => __( 'New Location Name' ),
+			'separate_items_with_commas' => __( 'Separate locations with commas' ),
+			'add_or_remove_items'        => __( 'Add or remove locations' ),
+			'choose_from_most_used'      => __( 'Choose from the most used locations' ),
+			'not_found'                  => __( 'No locations found.' ),
+			'menu_name'                  => __( 'Locations' ),
+		);
+
+		$args = array(
+			'hierarchical'          => true,
+			'labels'                => $labels,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var'             => true,
+			'rewrite'               => array( 'slug' => 'location' ),
+		);
+
+		register_taxonomy( 'location', 'ambassador_event', $args );
+
+	}
+
+	public function hide_location_taxonomy_metabox() {
+		remove_meta_box( 'locationdiv', 'ambassador_event', 'side' );
+	}
+
 	// Adapted from get_permalink function in wp-includes/link-template.php
 	public function event_permalink( $permalink, $post ) {
 
@@ -113,8 +157,10 @@ class Ambassador_Events {
 
 	    	$date_vars = array( '%year%', '%monthnum%' );
 
-	    	$dates[] = date('Y', strtotime($post->post_date) );
-	    	$dates[] = date('m', strtotime($post->post_date) );
+	    	$start_date = get_post_meta( $post->ID, '_ambassador_event_start_date', true );
+
+	    	$dates[] = date('Y', strtotime( $start_date ) );
+	    	$dates[] = date('m', strtotime( $start_date ) );
 
 	    	$permalink = str_replace( $date_vars, $dates, $permalink );
 
@@ -176,6 +222,14 @@ class Ambassador_Events {
 			'name' => __( 'Event End Time', 'ambassador' ),
 			'id'   => $prefix . 'end_time',
 			'type' => 'text_time',
+		) );
+
+		$event_details_box->add_field( array(
+			'name'     => __( 'Event Location', 'ambassador' ),
+			'desc'     => __( 'Select an event location. If none, present, create one in the menu', 'ambassador' ),
+			'id'       => $prefix . 'location',
+			'type'     => 'taxonomy_select',
+			'taxonomy' => 'location', // Taxonomy Slug
 		) );
 
 	}
@@ -284,18 +338,11 @@ class Ambassador_Events {
 	    }
 	}
 
-	function embee_event_filter_events($query){
-
-		// Show events on homepage
-		if ( is_home() && $query->is_main_query() ) {
-
-			// $query->set( 'post_type', array('post','embee_event') );
-
-		}
+	public function filter_event_query( $query ) {
 
 		if ( is_post_type_archive('ambassador_event') ) {
 
-			if( !is_admin() && $query->is_main_query() ) {
+			if ( ! is_admin() && $query->is_main_query() ) {
 
 				$query->set( 'meta_key', '_ambassador_event_start_date_actual' );
 				$query->set( 'orderby', 'meta_value_num' );
@@ -397,6 +444,23 @@ class Ambassador_Events {
 			$page_id = wp_insert_post( $page_args );
 
 		}
+
+	}
+
+	public function modify_event_query( $query ) {
+
+		if ( isset( $query->query_vars['post_type'] ) ) {
+
+			if ( 'ambassador_event' == $query->query_vars['post_type'] ) {
+
+				unset( $query->query_vars['year'] );
+				unset( $query->query_vars['monthnum'] );
+
+			}
+
+		}
+
+		return $query;
 
 	}
 
