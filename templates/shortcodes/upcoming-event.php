@@ -23,7 +23,7 @@
                </div>
             </section>
             <div id="upcoming-event-permalinks" class="col-md-12 col-sm-12 col-xs-12 ">
-               <span><a type="button" class="button medium btn btn-primary btn-lg" href="<?php echo get_permalink( $upcoming_event->ID ) ?>">View Event Details</a><a href="<?php echo home_url(); ?>/events" class="btn btn-link view-all">View all events</a></span>
+               <span><a type="button" class="button medium btn btn-primary btn-lg base-color" href="<?php echo get_permalink( $upcoming_event->ID ) ?>">View Event Details</a><a href="<?php echo home_url(); ?>/events" class="btn btn-link view-all">View all events</a></span>
             </div>
          <?php elseif ( $upcoming_event && ( $upcoming_event->timestamp < current_time('timestamp') ) ): ?>
 
