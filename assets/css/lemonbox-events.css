@@ -1,6 +1,9 @@
 
 .calendar-item {
 	display: table;
+	border: 1px solid #DDD;
+	border-radius: 2px;
+	margin-bottom: 20px;
 }
 
 .calendar-item:after {
@@ -10,27 +13,28 @@
    clear: both;
 }
 
-.calendar-item .content {
+.calendar-item .event-details {
 	width: 75%;
 	display: table-cell;
     vertical-align: middle;
+    padding-left: 20px;
 }
 
-.calendar-item .content span {
+.calendar-item .event-details span {
 	display: block;
 	width: 100%;
 	line-height: 24px;
 }
 
-.calendar-item .content .event-title {
+.calendar-item .event-details .event-title {
 	font-weight: bold;
 }
 
-.calendar-item .content .event-location {
+.calendar-item .event-details .event-location {
 	color: #666;
 }
 
-.calendar-item .content .event-date {
+.calendar-item .event-details .event-date {
 	color: #666;
 	margin-top: 5px;
 }
@@ -52,7 +56,6 @@
 }
 
 .calendar-entry span.day-of-week-label {
-	color: #999;
 	font-size: 14px;
 }
 
@@ -65,7 +68,6 @@
 .calendar-entry span.month-label {
 	text-transform: uppercase;
 	letter-spacing: 7px;
-	color: #999;
 }
 
 .calendar-item .reveal-more {
