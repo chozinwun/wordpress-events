@@ -85,8 +85,13 @@
 	color: inherit;
 }
 
-#upcoming-event {
-	margin-bottom: 20px;
+.upcoming-event {
+
+	.content {
+		max-width: 960px;
+		margin: 0 auto;
+	}
+
 }
 
 #upcoming-event .event-location {
@@ -180,7 +185,7 @@
 	}
 
 	#upcoming-event {
-		padding: 80px;
+		padding: 40px;
 	}
 
 	#upcoming-event .row:after {
@@ -244,7 +249,14 @@
 	}
 
 	#upcoming-event-permalinks a:last-of-type {
-		margin-left: 15px;
+		display: block;
+    	width: 100%;
+    	padding: 15px 0;
+	}
+
+	#upcoming-event-permalinks a:first-of-type {
+		float: none;
+		margin: 0 auto;
 	}
 
 	#event-details > div.left,

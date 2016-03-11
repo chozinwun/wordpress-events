@@ -1,6 +1,6 @@
 <?php $upcoming_event = Ambassador_Events::get_next_event(); ?>
 
-<div id="upcoming-event" class="container-fluid secondary-color">
+<div id="upcoming-event" class="container-fluid">
    <div class="container">
       <div class="row">
          <?php if ( $upcoming_event && ( current_time('timestamp') < $upcoming_event->timestamp ) ): ?>

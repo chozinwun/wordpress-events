@@ -59,6 +59,9 @@ class Ambassador_Events {
 		add_filter( 'the_date', array( $this, 'embee_event_filter_date' ) );
 		add_action( 'pre_get_posts', array( $this, 'filter_event_query' ) );
 
+		add_filter( 'ambassador_section_types', array( $this, 'add_upcoming_event_section_type' ) );
+		add_action( 'show_upcoming_event_section', array( $this, 'show_upcoming_event_section' ) );
+
 		$this->shortcode->hooks();
 
 	}
@@ -461,6 +464,28 @@ class Ambassador_Events {
 		}
 
 		return $query;
+
+	}
+
+	public function add_upcoming_event_section_type( $section_types = array() ) {
+
+		$section_types['upcoming_event'] = 'Upcoming Event';
+
+		return $section_types;
+
+	}
+
+	public function show_upcoming_event_section( $section_id ) {
+
+		$height = get_post_meta( $section_id, '_ambassador_section_height', true );
+		$background_url = get_post_meta( $section_id, '_ambassador_section_background', true );
+
+		$html = '<section class="upcoming-event" style="min-height: ' . $height . 'px;">';
+		$html .= '<div class="content align-text-center">' . do_shortcode('[upcoming_event]') . '</div>';
+		// $html .= '<div class="background" style="background-image: url(' . $background_url . ');"></div>';
+		$html .= '</section>';
+
+		echo $html;
 
 	}
 
