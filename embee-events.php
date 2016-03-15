@@ -406,7 +406,7 @@ class Ambassador_Events {
 				$end_time = get_post_meta( $event->ID, '_ambassador_event_end_time', true );
 
 				$upcoming_event->timestamp = strtotime( $start_date . ' ' . $start_time );
-				$upcoming_event->mysql = date( 'Y-m-d H:i:s', $upcoming_event->timestamp );
+				$upcoming_event->mysql = date( 'Y/m/d H:i:s', $upcoming_event->timestamp );
 
 				$upcoming_event->date_formatted = date( 'l F jS, Y g:iA', strtotime( $start_date . ' ' . $start_time ) );
 				$upcoming_event->end_date_formatted = date( 'l F jS', strtotime( $end_date ) );

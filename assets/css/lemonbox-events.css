@@ -241,7 +241,6 @@
 	#upcoming-event #countdown {
 		width: 100%;
 		float: none;
-		display: none;
 	}
 
 	#upcoming-event-permalinks a {
